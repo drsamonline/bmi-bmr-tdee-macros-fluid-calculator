@@ -134,12 +134,47 @@ button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 details.adv{margin-top:4px;}
 details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(--accent); margin-bottom:10px;}
 
+.res-head{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+.res-head h2{margin:0;}
+.res-actions{display:flex; gap:6px;}
+.trend-wrap{margin-top:12px; padding-top:10px; border-top:1px dashed var(--border);}
+.trend svg{width:100%; height:76px; display:block; overflow:visible;}
+.trend .ax{font-size:9px; fill:var(--muted);}
+.trend .dot{fill:var(--accent);}
+.trend .line{fill:none; stroke:var(--accent); stroke-width:2;}
+.stat .lbl[title]{cursor:help; border-bottom:1px dotted var(--muted);}
+.defs{font-size:12px; color:var(--muted); margin-top:10px;}
+.defs summary{cursor:pointer; font-weight:600; color:var(--text);}
+.defs dt{color:var(--text); font-weight:600; margin-top:7px; font-size:12px;}
+.defs dd{margin:1px 0 0;}
+
+@media (min-width:640px){
+  .app{max-width:740px; padding:16px 20px 116px;}
+  .bottom-bar{max-width:740px;}
+  h1{font-size:21px;}
+  .stat .val{font-size:19px;}
+}
+@media (min-width:960px){
+  .app{max-width:1180px; padding:22px 26px 104px;}
+  main{display:grid; grid-template-columns:minmax(340px,1fr) minmax(440px,1.25fr); grid-template-areas:"inputs results" "saved results"; gap:16px; align-items:start;}
+  .card-inputs{grid-area:inputs;}
+  .card-results{grid-area:results; position:sticky; top:16px; max-height:calc(100dvh - 32px); overflow:auto;}
+  .card-saved{grid-area:saved;}
+  .card{margin-bottom:0;}
+  .results{grid-template-columns:repeat(3,1fr);}
+  .stat .val{font-size:20px;}
+  .bottom-bar{max-width:1180px; border-radius:14px 14px 0 0;}
+  #toast{bottom:96px;}
+}
+
 @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
 @media print{
   body{background:#fff; color:#000;}
-  .bottom-bar,.controls,#toast,details.adv,.disclaimer,.filter,.entry-btn,.ico-btn{display:none !important;}
-  .card{box-shadow:none; border-color:#bbb; break-inside:avoid;}
+  .bottom-bar,.controls,#toast,details.adv,.disclaimer,.filter,.entry-btn,.ico-btn,.res-actions,.trend-wrap{display:none !important;}
+  .card{box-shadow:none; border-color:#bbb; break-inside:avoid; margin-bottom:12px;}
   .app{max-width:100%; padding:0;}
+  main{display:block !important;}
+  .card-results{position:static !important;}
   .stat .val{color:#000;}
 }
 </style>
@@ -165,7 +200,7 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
   </div>
 
   <main>
-    <section class="card" aria-label="Inputs">
+    <section class="card card-inputs" aria-label="Inputs">
       <h2 data-i18n="inputs">Patient inputs</h2>
 
       <div class="field">
@@ -248,6 +283,13 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
       </div>
 
       <div class="field">
+        <label for="hip" data-i18n="hip">Hip circumference (cm, optional)</label>
+        <input type="number" id="hip" placeholder="e.g. 100" step="0.1" min="30" max="250" inputmode="decimal" enterkeyhint="next">
+        <div class="err-msg" id="hipErr" data-i18n="hipErr">Enter a hip circumference between 30 and 250 cm.</div>
+        <div class="hint" data-i18n="hipHint">Used for waist-to-hip ratio. Risk: men &gt;0.90, women &gt;0.85.</div>
+      </div>
+
+      <div class="field">
         <label for="activity" data-i18n="activity">Activity level</label>
         <select id="activity">
           <option value="sedentary" data-i18n="sedentary">Sedentary (little exercise)</option>
@@ -321,8 +363,14 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
       </details>
     </section>
 
-    <section class="card" aria-label="Results">
-      <h2 data-i18n="results">Results</h2>
+    <section class="card card-results" aria-label="Results">
+      <div class="res-head">
+        <h2 data-i18n="results">Results</h2>
+        <div class="res-actions">
+          <button class="ico-btn" id="btnCopy" type="button" data-i18n="copy">Copy</button>
+          <button class="ico-btn" id="btnShare" type="button" data-i18n="share">Share</button>
+        </div>
+      </div>
       <div class="results" id="resultsGrid" aria-live="polite" aria-atomic="false">
         <div class="section-title" data-i18n="secBody">Body composition</div>
         <div class="stat wide">
@@ -332,12 +380,15 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
           <div class="gauge" id="gauge" aria-hidden="true"></div>
           <div class="gauge-scale" id="gaugeScale"></div>
         </div>
-        <div class="stat"><div class="val" id="rBf">--</div><div class="lbl" data-i18n="bodyfat">Body fat (%)</div></div>
-        <div class="stat"><div class="val" id="rLbm">--</div><div class="lbl" data-i18n="lbm">Lean mass (kg)</div></div>
-        <div class="stat"><div class="val" id="rWhtr">--</div><div class="lbl" data-i18n="whtr">Waist / height</div></div>
-        <div class="stat"><div class="val" id="rBsa">--</div><div class="lbl" data-i18n="bsa">BSA (m&sup2;)</div></div>
-        <div class="stat"><div class="val" id="rIbw">--</div><div class="lbl" data-i18n="ibw">Ideal wt (kg)</div></div>
-        <div class="stat"><div class="val" id="rAbw">--</div><div class="lbl" data-i18n="abw">Adjusted wt (kg)</div></div>
+        <div class="stat"><div class="val" id="rBf">--</div><div class="lbl" title="Estimated body-fat % (Deurenberg) from BMI, age and sex." data-i18n="bodyfat">Body fat (%)</div></div>
+        <div class="stat"><div class="val" id="rLbm">--</div><div class="lbl" title="Fat-free mass = weight x (1 - body-fat %)." data-i18n="lbm">Lean mass (kg)</div></div>
+        <div class="stat"><div class="val" id="rWhtr">--</div><div class="lbl" title="Waist-to-height ratio; >=0.5 is elevated." data-i18n="whtr">Waist / height</div></div>
+        <div class="stat"><div class="val" id="rWhr">--</div><div class="lbl" title="Waist-to-hip ratio; men >0.90, women >0.85 elevated." data-i18n="whr">Waist / hip</div></div>
+        <div class="stat"><div class="val" id="rBsa">--</div><div class="lbl" title="Body surface area (Mosteller), used for drug dosing." data-i18n="bsa">BSA (m&sup2;)</div></div>
+        <div class="stat"><div class="val" id="rIbw">--</div><div class="lbl" title="Ideal body weight (Devine)." data-i18n="ibw">Ideal wt (kg)</div></div>
+        <div class="stat"><div class="val" id="rAbw">--</div><div class="lbl" title="Adjusted weight = IBW + 0.25 x (actual - IBW)." data-i18n="abw">Adjusted wt (kg)</div></div>
+        <div class="stat wide"><div class="val" id="rIdealRange">--</div><div class="lbl" title="Weight range that corresponds to a normal BMI." data-i18n="idealRange">Ideal weight range (kg)</div></div>
+        <div class="stat wide"><div class="val" id="rTarget">--</div><div class="lbl" title="Weight to reach the top of the normal BMI range, and the change needed." data-i18n="targetWt">Target weight (kg)</div></div>
 
         <div class="section-title" data-i18n="secEnergy">Energy</div>
         <div class="stat"><div class="val" id="rBmr">--</div><div class="lbl">BMR (kcal)</div></div>
@@ -346,23 +397,43 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
         <div class="stat wide"><div class="val" id="rChange">--</div><div class="lbl" data-i18n="change">Projected change (lose / gain)</div></div>
 
         <div class="section-title" data-i18n="secMacros">Macros</div>
-        <div class="stat"><div class="val" id="rProtein">--</div><div class="lbl" data-i18n="protein">Protein (g)</div></div>
-        <div class="stat"><div class="val" id="rFat">--</div><div class="lbl" data-i18n="fat">Fat (g)</div></div>
-        <div class="stat"><div class="val" id="rCarbs">--</div><div class="lbl" data-i18n="carbs">Carbs (g)</div></div>
-        <div class="stat"><div class="val" id="rFiber">--</div><div class="lbl" data-i18n="fiber">Fiber (g)</div></div>
+        <div class="stat"><div class="val" id="rProtein">--</div><div class="lbl" title="Protein target from activity level (DRI/ACSM)." data-i18n="protein">Protein (g)</div></div>
+        <div class="stat"><div class="val" id="rFat">--</div><div class="lbl" title="Fat grams from the selected fat ratio." data-i18n="fat">Fat (g)</div></div>
+        <div class="stat"><div class="val" id="rCarbs">--</div><div class="lbl" title="Remaining calories as carbohydrate." data-i18n="carbs">Carbs (g)</div></div>
+        <div class="stat"><div class="val" id="rFiber">--</div><div class="lbl" title="Fiber: 14 g per 1000 kcal (DRI target in brackets)." data-i18n="fiber">Fiber (g)</div></div>
+        <div class="stat"><div class="val" id="rProteinMeal">--</div><div class="lbl" title="Protein spread over three meals." data-i18n="proteinMeal">Protein / meal (g)</div></div>
+        <div class="stat"><div class="val" id="rMacroPct">--</div><div class="lbl" title="Share of calories from protein / fat / carbohydrate." data-i18n="macroPct">P / F / C (%)</div></div>
 
         <div class="section-title" data-i18n="secFluid">Fluids</div>
         <div class="stat wide fluid"><div class="val info" id="rFluid">--</div><div class="lbl" data-i18n="fluidLbl">Daily fluid requirement</div></div>
       </div>
       <div class="caution" id="caution"></div>
+      <details class="defs">
+        <summary data-i18n="defsTitle">What these mean</summary>
+        <dl>
+          <dt>BMI</dt><dd>Weight (kg) &divide; height&sup2; (m&sup2;). Categorised with Indian/Asia-Pacific or WHO cut-offs.</dd>
+          <dt>Body fat %</dt><dd>Estimated from BMI, age and sex (Deurenberg). A population estimate, not a measurement.</dd>
+          <dt>Lean mass</dt><dd>Fat-free mass = weight &times; (1 &minus; body-fat %).</dd>
+          <dt>Waist / height &amp; waist / hip</dt><dd>Central-obesity risk ratios. Waist-to-height &ge;0.5; waist-to-hip &gt;0.90 (men) or &gt;0.85 (women) is elevated.</dd>
+          <dt>BSA</dt><dd>Body surface area (Mosteller), used for drug dosing.</dd>
+          <dt>Ideal / adjusted weight</dt><dd>Devine ideal body weight, and IBW + 0.25 &times; (actual &minus; IBW).</dd>
+          <dt>BMR / TDEE</dt><dd>Resting energy (Mifflin-St Jeor) and total daily energy with the activity multiplier.</dd>
+          <dt>Protein / fat / carbs / fiber</dt><dd>Daily macro targets; carbohydrate fills the remaining calories.</dd>
+          <dt>Fluid</dt><dd>30 mL/kg/day baseline, adjusted for climate, exercise, fever and breastfeeding.</dd>
+        </dl>
+      </details>
       <div class="hint" style="margin-top:8px;" data-i18n="footnote">Protein scales 0.8-2.0 g/kg by activity (DRI/ACSM). Fluid uses a 30 mL/kg baseline adjusted for climate, exercise and clinical flags. Always apply clinical judgement for renal, cardiac and paediatric patients.</div>
     </section>
 
-    <section class="card" aria-label="Saved entries">
+    <section class="card card-saved" aria-label="Saved entries">
       <h2 data-i18n="saved">Saved entries</h2>
       <input type="text" class="filter" id="filter" placeholder="Filter by name / ID" data-i18n-ph="filterPh">
       <ul class="saved-list" id="savedList"></ul>
       <div class="empty" id="emptyMsg" data-i18n="noEntries">No entries saved yet.</div>
+      <div class="trend-wrap hidden" id="trendWrap">
+        <label data-i18n="trend">BMI trend</label>
+        <div class="trend" id="trend"></div>
+      </div>
       <button class="ico-btn hidden" id="btnClearAll" type="button" style="margin-top:8px;" data-i18n="clearAll">Clear all entries</button>
     </section>
   </main>
@@ -403,7 +474,7 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
 (function(){
 "use strict";
 
-var VERSION = "2.0.0";
+var VERSION = "2.1.0";
 var STORAGE_KEY = "chc_entries_v2";
 var THEME_KEY = "chc_theme";
 var LANG_KEY = "chc_lang";
@@ -438,6 +509,7 @@ var I18N = {
     footnote:"Protein scales 0.8-2.0 g/kg by activity (DRI/ACSM). Fluid uses a 30 mL/kg baseline adjusted for climate, exercise and clinical flags. Always apply clinical judgement for renal, cardiac and paediatric patients.",
     saved:"Saved entries", filterPh:"Filter by name / ID", noEntries:"No entries saved yet.", clearAll:"Clear all entries",
     privacy:"All data stays on this device. Nothing is uploaded.", references:"References & formulas",
+    hip:"Hip circumference (cm, optional)", hipHint:"Used for waist-to-hip ratio. Risk: men >0.90, women >0.85.", hipErr:"Enter a hip circumference between 30 and 250 cm.", whr:"Waist / hip", idealRange:"Ideal weight range (kg)", targetWt:"Target weight (kg)", proteinMeal:"Protein / meal (g)", macroPct:"P / F / C (%)", trend:"BMI trend", trendNone:"Save two or more entries to see a trend.", copy:"Copy", share:"Share", copied:"Summary copied.", defsTitle:"What these mean",
     save:"Save", saveNext:"Save & Next", reset:"Reset", export:"Export CSV", import:"Import", print:"Print",
     under:"Underweight", normal:"Normal", over:"Overweight", obese:"Obese",
     catUnder:"Underweight", catNormal:"Normal", catOver:"Overweight", catObese:"Obese",
@@ -471,6 +543,7 @@ var I18N = {
     footnote:"\u092a\u094d\u0930\u094b\u091f\u0940\u0928 \u0917\u0924\u093f\u0935\u093f\u0927\u093f \u0905\u0928\u0941\u0938\u093e\u0930 0.8-2.0 g/kg\u0964 \u0924\u0930\u0932 30 mL/kg \u0906\u0927\u093e\u0930 \u092a\u0930\u0964 \u0915\u0943\u092a\u092f\u093e \u0928\u0948\u0926\u093e\u0928\u093f\u0915 \u0928\u093f\u0930\u094d\u0923\u092f \u0932\u0947\u0902\u0964",
     saved:"\u0938\u0939\u0947\u091c\u0940 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f\u092f\u093e\u0901", filterPh:"\u0928\u093e\u092e \u0938\u0947 \u092b\u093c\u093f\u0932\u094d\u091f\u0930", noEntries:"\u0905\u092d\u0940 \u0915\u094b\u0908 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f \u0928\u0939\u0940\u0902\u0964", clearAll:"\u0938\u092d\u0940 \u0939\u091f\u093e\u090f\u0901",
     privacy:"\u0938\u092d\u0940 \u0921\u0947\u091f\u093e \u0907\u0938 \u0921\u093f\u0935\u093e\u0907\u0938 \u092a\u0930 \u0930\u0939\u0924\u093e \u0939\u0948\u0964", references:"\u0938\u0902\u0926\u0930\u094d\u092d \u0914\u0930 \u0938\u0942\u0924\u094d\u0930",
+    hip:"\u0915\u0942\u0932\u094d\u0939\u093e \u092a\u0930\u093f\u0927\u093f (cm, \u0935\u0948\u0915\u0932\u094d\u092a\u093f\u0915)", hipHint:"\u0915\u092e\u0930-\u0915\u0942\u0932\u094d\u0939\u093e \u0905\u0928\u0941\u092a\u093e\u0924 \u0915\u0947 \u0932\u093f\u090f\u0964 \u091c\u094b\u0916\u093f\u092e: \u092a\u0941\u0930\u0941\u0937 >0.90, \u092e\u0939\u093f\u0932\u093e >0.85\u0964", hipErr:"30 \u0938\u0947 250 cm \u0915\u0947 \u092c\u0940\u091a \u0915\u0942\u0932\u094d\u0939\u093e \u092a\u0930\u093f\u0927\u093f \u0926\u0930\u094d\u091c \u0915\u0930\u0947\u0902\u0964", whr:"\u0915\u092e\u0930 / \u0915\u0942\u0932\u094d\u0939\u093e", idealRange:"\u0906\u0926\u0930\u094d\u0936 \u0935\u091c\u0928 \u0938\u0940\u092e\u093e (kg)", targetWt:"\u0932\u0915\u094d\u0937\u094d\u092f \u0935\u091c\u0928 (kg)", proteinMeal:"\u092a\u094d\u0930\u094b\u091f\u0940\u0928 / \u092d\u094b\u091c\u0928 (g)", macroPct:"P / F / C (%)", trend:"BMI \u0930\u0941\u091d\u093e\u0928", trendNone:"\u0930\u0941\u091d\u093e\u0928 \u0915\u0947 \u0932\u093f\u090f \u0926\u094b \u092f\u093e \u0905\u0927\u093f\u0915 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f\u092f\u093e\u0901 \u0938\u0939\u0947\u091c\u0947\u0902\u0964", copy:"\u0915\u0949\u092a\u0940", share:"\u0938\u093e\u091d\u093e", copied:"\u0938\u093e\u0930\u093e\u0902\u0936 \u0915\u0949\u092a\u0940 \u0939\u0941\u0906\u0964", defsTitle:"\u0907\u0928\u0915\u093e \u0905\u0930\u094d\u0925",
     save:"\u0938\u0939\u0947\u091c\u0947\u0902", saveNext:"\u0938\u0939\u0947\u091c\u0947\u0902 \u0914\u0930 \u0905\u0917\u0932\u093e", reset:"\u0930\u0940\u0938\u0947\u091f", export:"CSV \u0928\u093f\u0930\u094d\u092f\u093e\u0924", import:"\u0906\u092f\u093e\u0924", print:"\u092a\u094d\u0930\u093f\u0902\u091f",
     catUnder:"\u0915\u092e \u0935\u091c\u0928", catNormal:"\u0938\u093e\u092e\u093e\u0928\u094d\u092f", catOver:"\u0905\u0927\u093f\u0915 \u0935\u091c\u0928", catObese:"\u092e\u094b\u091f\u093e\u092a\u093e",
     invalid:"\u0915\u0943\u092a\u092f\u093e \u0939\u093e\u0907\u0932\u093e\u0907\u091f \u0915\u093f\u090f \u0916\u093e\u0928\u0947 \u0920\u0940\u0915 \u0915\u0930\u0947\u0902\u0964", savedMsg:"\u0938\u0939\u0947\u091c\u093e \u0917\u092f\u093e\u0964", deletedMsg:"\u0939\u091f\u093e\u092f\u093e \u0917\u092f\u093e\u0964", clearedMsg:"\u0938\u092d\u0940 \u0939\u091f\u093e\u090f \u0917\u090f\u0964", resetMsg:"\u092b\u093c\u0949\u0930\u094d\u092e \u0938\u093e\u092b\u093c\u0964", importedMsg:"\u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f\u092f\u093e\u0901 \u0906\u092f\u093e\u0924\u0964", undo:"\u0935\u093e\u092a\u0938", noData:"\u0928\u093f\u0930\u094d\u092f\u093e\u0924 \u0915\u0947 \u0932\u093f\u090f \u0915\u0941\u091b \u0928\u0939\u0940\u0902\u0964", badFile:"\u092b\u093c\u093e\u0907\u0932 \u092a\u0922\u093c\u0940 \u0928\u0939\u0940\u0902 \u091c\u093e \u0938\u0915\u0940\u0964",
@@ -502,6 +575,7 @@ var I18N = {
     footnote:"\u0aaa\u0acd\u0ab0\u0acb\u0a9f\u0ac0\u0aa8 \u0aaa\u0acd\u0ab0\u0ab5\u0ac3\u0aa4\u0acd\u0aa4\u0abf \u0aae\u0ac1\u0a9c\u0aac 0.8-2.0 g/kg. \u0aaa\u0acd\u0ab0\u0ab5\u0abe\u0ab9\u0ac0 30 mL/kg \u0a86\u0aa7\u0abe\u0ab0\u0ac7. \u0aa4\u0aac\u0ac0\u0aac\u0ac0 \u0aa8\u0abf\u0ab0\u0acd\u0aa3\u0aaf \u0ab2\u0acb.",
     saved:"\u0ab8\u0abe\u0a9a\u0ab5\u0ac7\u0ab2\u0ac0 \u0aa8\u0acb\u0a82\u0aa7\u0acb", filterPh:"\u0aa8\u0abe\u0aae \u0aaa\u0ab0\u0aa5\u0ac0 \u0aab\u0abf\u0ab2\u0acd\u0a9f\u0ab0", noEntries:"\u0a85\u0a9c\u0ac0 \u0a95\u0acb\u0a88 \u0aa8\u0acb\u0a82\u0aa7 \u0aa8\u0aa5\u0ac0.", clearAll:"\u0aac\u0aa7\u0ac1\u0a82 \u0ab9\u0a9f\u0abe\u0ab5\u0acb",
     privacy:"\u0aac\u0aa7\u0acb \u0aa1\u0ac7\u0a9f\u0abe \u0a86 \u0a89\u0aaa\u0a95\u0ab0\u0aa3 \u0aaa\u0ab0 \u0ab0\u0ab9\u0ac7 \u0a9b\u0ac7.", references:"\u0ab8\u0a82\u0aa6\u0ab0\u0acd\u0aad \u0a85\u0aa8\u0ac7 \u0ab8\u0ac2\u0aa4\u0acd\u0ab0",
+    hip:"\u0ab9\u0abf\u0aaa \u0aaa\u0ab0\u0abf\u0a98 (cm, \u0ab5\u0ac8\u0a95\u0ab2\u0acd\u0aaa\u0abf\u0a95)", hipHint:"\u0a95\u0aae\u0ab0-\u0ab9\u0abf\u0aaa \u0a97\u0ac1\u0aa3\u0acb\u0aa4\u0acd\u0aa4\u0ab0 \u0aae\u0abe\u0a9f\u0ac7. \u0a9c\u0acb\u0a96\u0aae: \u0aaa\u0ac1\u0ab0\u0ac1\u0ab7 >0.90, \u0ab8\u0acd\u0aa4\u0acd\u0ab0\u0ac0 >0.85.", hipErr:"30 \u0aa5\u0ac0 250 cm \u0ab5\u0a9a\u0acd\u0a9a\u0ac7 \u0ab9\u0abf\u0aaa \u0aaa\u0ab0\u0abf\u0a98 \u0aa6\u0abe\u0a96\u0ab2 \u0a95\u0ab0\u0acb.", whr:"\u0a95\u0aae\u0ab0 / \u0ab9\u0abf\u0aaa", idealRange:"\u0a86\u0aa6\u0ab0\u0acd\u0ab6 \u0ab5\u0a9c\u0aa8 \u0ab6\u0acd\u0ab0\u0ac7\u0aa3\u0ac0 (kg)", targetWt:"\u0ab2\u0a95\u0acd\u0ab7\u0acd\u0aaf \u0ab5\u0a9c\u0aa8 (kg)", proteinMeal:"\u0aaa\u0acd\u0ab0\u0acb\u0a9f\u0ac0\u0aa8 / \u0aad\u0acb\u0a9c\u0aa8 (g)", macroPct:"P / F / C (%)", trend:"BMI \u0ab5\u0ab2\u0aa3", trendNone:"\u0ab5\u0ab2\u0aa3 \u0aae\u0abe\u0a9f\u0ac7 \u0aac\u0ac7 \u0a95\u0ac7 \u0ab5\u0aa7\u0ac1 \u0aa8\u0acb\u0a82\u0aa7 \u0ab8\u0abe\u0a9a\u0ab5\u0acb.", copy:"\u0a95\u0ac9\u0aaa\u0abf", share:"\u0ab6\u0ac7\u0ab0", copied:"\u0ab8\u0abe\u0ab0\u0abe\u0a82\u0ab6 \u0a95\u0ac9\u0aaa\u0abf \u0aa5\u0aaf\u0acb.", defsTitle:"\u0a86\u0aa8\u0acb \u0a85\u0ab0\u0acd\u0aa5",
     save:"\u0ab8\u0abe\u0a9a\u0ab5\u0acb", saveNext:"\u0ab8\u0abe\u0a9a\u0ab5\u0acb \u0a85\u0aa8\u0ac7 \u0a86\u0a97\u0ab3", reset:"\u0ab0\u0ac0\u0ab8\u0ac7\u0a9f", export:"CSV \u0aa8\u0abf\u0a95\u0abe\u0ab8", import:"\u0a86\u0aaf\u0abe\u0aa4", print:"\u0aaa\u0acd\u0ab0\u0abf\u0a82\u0a9f",
     catUnder:"\u0a93\u0a9b\u0ac1\u0a82 \u0ab5\u0a9c\u0aa8", catNormal:"\u0ab8\u0abe\u0aae\u0abe\u0aa8\u0acd\u0aaf", catOver:"\u0ab5\u0aa7\u0abe\u0ab0\u0ac1\u0a82 \u0ab5\u0a9c\u0aa8", catObese:"\u0ab8\u0acd\u0aa5\u0ac2\u0ab2\u0aa4\u0abe",
     invalid:"\u0a95\u0ac3\u0aaa\u0abe \u0ab9\u0abe\u0a87\u0ab2\u0abe\u0a87\u0a9f \u0a95\u0ac7\u0ab2\u0abe \u0a96\u0abe\u0aa8\u0abe \u0ab8\u0ac1\u0aa7\u0abe\u0ab0\u0acb.", savedMsg:"\u0ab8\u0abe\u0a9a\u0ab5\u0acd\u0aaf\u0ac1\u0a82.", deletedMsg:"\u0ab9\u0a9f\u0abe\u0ab5\u0acd\u0aaf\u0ac1\u0a82.", clearedMsg:"\u0aac\u0aa7\u0ac1\u0a82 \u0ab9\u0a9f\u0abe\u0ab5\u0acd\u0aaf\u0ac1\u0a82.", resetMsg:"\u0aab\u0acb\u0ab0\u0acd\u0aae \u0ab8\u0abe\u0aab.", importedMsg:"\u0aa8\u0acb\u0a82\u0aa7\u0acb \u0a86\u0aaf\u0abe\u0aa4.", undo:"\u0aaa\u0abe\u0a9b\u0abe", noData:"\u0aa8\u0abf\u0a95\u0abe\u0ab8 \u0aae\u0abe\u0a9f\u0ac7 \u0a95\u0a82\u0a88 \u0aa8\u0aa5\u0ac0.", badFile:"\u0aab\u0abe\u0a87\u0ab2 \u0ab5\u0a82\u0a9a\u0ac0 \u0ab6\u0a95\u0abe\u0aaf\u0ac0 \u0aa8\u0ab9\u0abf\u0a82.",
@@ -530,6 +604,8 @@ var ACTIVITY = {
   active:{mult:1.55, prot:1.6}, very:{mult:1.725, prot:2.0}, extra:{mult:1.9, prot:2.0}
 };
 var FAT_RATIO = { balanced:0.25, highcarb:0.20, lowcarb:0.35 };
+var WHR_CUT = { M:0.90, F:0.85 };
+function normalRange(std){ return std === "indian" ? [18.5, 22.9] : [18.5, 24.9]; }
 var CLIMATE = { temperate:1.0, hot:1.15, veryhot:1.3 };
 var EXERCISE_ML = { none:0, light:300, moderate:600, intense:1000 };
 var FLUID_BASE = 30, FEVER_ML = 500, BF_ML = 700, FIBER_PER_1000 = 14, KCAL_PER_G_FAT = 9, KCAL_PER_G_PROTEIN = 4, KCAL_PER_G_CARB = 4;
@@ -538,9 +614,9 @@ var state = { gender:"M", heightUnit:"cm", weightUnit:"kg", proteinBasis:"total"
 
 /* ---------------- element refs ---------------- */
 var el = {};
-["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","activity","fatRatio","climate","exercise","fever","breastfeeding","renal","heart","athlete",
- "rBmi","rBmiCat","rBf","rLbm","rWhtr","rBsa","rIbw","rAbw","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rFluid",
- "savedList","emptyMsg","filter","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","fileInput"].forEach(function(id){ el[id]=$(id); });
+["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise","fever","breastfeeding","renal","heart","athlete",
+ "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid",
+ "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput"].forEach(function(id){ el[id]=$(id); });
 
 el.ver.textContent = VERSION;
 el.yearNow.textContent = new Date().getFullYear();
@@ -669,6 +745,9 @@ function validate(){
   var wBad = wKg > 0 && (wKg < 2 || wKg > 400);
   var wMissing = wKg <= 0;
   toggleErr(wInputRef(), "weightErr", wBad || wMissing); if(wBad || wMissing) ok = false;
+  var hipV = el.hip.value;
+  var hipBad = hipV !== "" && (num(hipV) < 30 || num(hipV) > 250);
+  toggleErr(el.hip, "hipErr", hipBad); if(hipBad) ok = false;
   return ok;
 }
 function toggleErr(input, errId, bad){
@@ -686,9 +765,10 @@ function flagWeight(){
   var any = (state.weightUnit==="kg" && el.weightKg.value!=="") || (state.weightUnit==="lbs" && el.weightLbs.value!=="");
   var w = getWeightKg(); toggleErr(wInputRef(), "weightErr", any && (w < 2 || w > 400));
 }
+function flagHip(){ var v = el.hip.value; toggleErr(el.hip, "hipErr", v !== "" && (num(v) < 30 || num(v) > 250)); }
 function clearErrors(){
-  ["age","heightCm","heightM","heightFt","weightKg","weightLbs"].forEach(function(id){ if(el[id]) el[id].classList.remove("err"); });
-  ["ageErr","heightErr","weightErr"].forEach(function(id){ $(id).classList.remove("show"); });
+  ["age","heightCm","heightM","heightFt","weightKg","weightLbs","hip"].forEach(function(id){ if(el[id]) el[id].classList.remove("err"); });
+  ["ageErr","heightErr","weightErr","hipErr"].forEach(function(id){ $(id).classList.remove("show"); });
 }
 
 function calculate(){
@@ -702,7 +782,7 @@ function calculate(){
   var valid = age > 0 && heightCm > 0 && weightKg > 0;
 
   if(!valid){
-    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rBsa","rIbw","rAbw","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rFluid"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
+    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
     el.gauge.innerHTML = ""; el.gaugeScale.textContent = "";
     renderCaution([]);
     return null;
@@ -728,6 +808,14 @@ function calculate(){
   var lbm = weightKg * (1 - bf/100);
   var waistCm = num(el.waist.value);
   var whtr = waistCm > 0 ? waistCm / heightCm : 0;
+  var hipCm = num(el.hip.value);
+  var whr = (waistCm > 0 && hipCm > 0) ? waistCm / hipCm : 0;
+  var nrange = normalRange(state.bmiStandard);
+  var hM2 = heightM * heightM;
+  var idealLo = nrange[0] * hM2, idealHi = nrange[1] * hM2;
+  var targetWt = idealHi;
+  var inRange = weightKg >= idealLo && weightKg <= idealHi;
+  var kgToGo = weightKg - targetWt;
 
   var cat = bmiCategory(bmi, state.bmiStandard);
   el.rBmi.textContent = r1(bmi);
@@ -737,9 +825,12 @@ function calculate(){
   el.rBf.textContent = r1(bf) + "%";
   el.rLbm.textContent = r1(lbm);
   el.rWhtr.textContent = whtr > 0 ? whtr.toFixed(2) + (whtr >= 0.5 ? " \u26a0" : "") : "--";
+  el.rWhr.textContent = whr > 0 ? whr.toFixed(2) + (whr > (state.gender === "M" ? WHR_CUT.M : WHR_CUT.F) ? " \u26a0" : "") : "--";
   el.rBsa.textContent = bsa.toFixed(2);
   el.rIbw.textContent = r1(ibw);
   el.rAbw.textContent = r1(abw);
+  el.rIdealRange.textContent = r1(idealLo) + " \u2013 " + r1(idealHi);
+  el.rTarget.textContent = inRange ? r1(weightKg) + " \u2713" : r1(targetWt) + " (" + (kgToGo > 0 ? "\u2212" : "+") + r1(Math.abs(kgToGo)) + " kg)";
   el.rBmr.textContent = r0(bmr);
   el.rTdee.textContent = r0(tdee);
   var lose = tdee - 500, gain = tdee + 300;
@@ -750,6 +841,8 @@ function calculate(){
   el.rFat.textContent = r1(fat);
   el.rCarbs.textContent = r1(carbs);
   el.rFiber.textContent = r1(fiber) + " (" + fiberDri + ")";
+  el.rProteinMeal.textContent = r1(protein / 3);
+  el.rMacroPct.textContent = Math.round(protein*4/tdee*100) + "/" + Math.round(fat*9/tdee*100) + "/" + Math.round(carbs*4/tdee*100);
   el.rFluid.textContent = r0(fluid) + " mL (" + fluidL.toFixed(2) + " L / " + Math.round(fluid/250) + " " + t("glasses") + ")";
 
   var cautions = [];
@@ -765,7 +858,10 @@ function calculate(){
     heightCm: r1(heightCm), weightKg: r1(weightKg), waistCm: waistCm > 0 ? r1(waistCm) : "",
     activity: activityKey, bmi: r1(bmi), bmiCat: t(cat.key),
     bmr: r0(bmr), tdee: r0(tdee), protein: r1(protein), fat: r1(fat), carbs: r1(carbs), fiber: r1(fiber),
-    fluidMl: r0(fluid), ibw: r1(ibw), abw: r1(abw), bsa: bsa.toFixed(2), bf: r1(bf), lbm: r1(lbm), whtr: whtr > 0 ? whtr.toFixed(2) : ""
+    fluidMl: r0(fluid), ibw: r1(ibw), abw: r1(abw), bsa: bsa.toFixed(2), bf: r1(bf), lbm: r1(lbm),
+    whtr: whtr > 0 ? whtr.toFixed(2) : "", hipCm: hipCm > 0 ? r1(hipCm) : "", whr: whr > 0 ? whr.toFixed(2) : "",
+    idealLo: r1(idealLo), idealHi: r1(idealHi), target: r1(targetWt), kgToGo: r1(kgToGo),
+    proteinMeal: r1(protein/3), macroPct: Math.round(protein*4/tdee*100) + "/" + Math.round(fat*9/tdee*100) + "/" + Math.round(carbs*4/tdee*100)
   };
 }
 function renderCaution(list){
@@ -830,8 +926,55 @@ function renderSaved(){
     li.appendChild(txt); li.appendChild(load); li.appendChild(del);
     el.savedList.appendChild(li);
   });
+  drawTrend();
 }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+
+function drawTrend(){
+  var pts = entries.filter(function(e){ return e && isFinite(e.bmi) && e.bmi > 0; });
+  if(pts.length < 2){ el.trendWrap.classList.add("hidden"); el.trend.innerHTML = ""; return; }
+  pts.sort(function(a,b){ return (a.ts||0) - (b.ts||0); });
+  if(pts.length > 40) pts = pts.slice(pts.length - 40);
+  var W = 300, H = 76, pad = 10;
+  var vals = pts.map(function(e){ return e.bmi; });
+  var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+  if(hi - lo < 2){ var mid = (hi + lo) / 2; lo = mid - 1; hi = mid + 1; }
+  var x = function(i){ return pad + (W - 2*pad) * (i / (pts.length - 1)); };
+  var y = function(v){ return H - pad - (H - 2*pad) * ((v - lo) / (hi - lo)); };
+  var path = pts.map(function(e,i){ return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(e.bmi).toFixed(1); }).join(" ");
+  var dots = pts.map(function(e,i){ return "<circle class='dot' cx='" + x(i).toFixed(1) + "' cy='" + y(e.bmi).toFixed(1) + "' r='2.5'></circle>"; }).join("");
+  el.trend.innerHTML = "<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" + esc(t("trend")) + "'>" +
+    "<text class='ax' x='2' y='11'>" + r1(hi) + "</text>" +
+    "<text class='ax' x='2' y='" + (H - 2) + "'>" + r1(lo) + "</text>" +
+    "<path class='line' d='" + path + "'></path>" + dots + "</svg>";
+  el.trendWrap.classList.remove("hidden");
+}
+
+function summaryText(){
+  var d = calculate();
+  if(!d) return "";
+  return (d.patient ? d.patient + " - " : "") + "Clinical Health Calculator\n" +
+    "Age " + d.age + " \u00b7 " + d.gender + " \u00b7 " + d.heightCm + " cm \u00b7 " + d.weightKg + " kg\n" +
+    "BMI " + d.bmi + " (" + d.bmiCat + ")\n" +
+    "BMR " + d.bmr + " kcal \u00b7 TDEE " + d.tdee + " kcal\n" +
+    "Protein " + d.protein + "g \u00b7 Fat " + d.fat + "g \u00b7 Carbs " + d.carbs + "g \u00b7 Fiber " + d.fiber + "g\n" +
+    "Fluid " + d.fluidMl + " mL\n" +
+    "Ideal weight " + d.idealLo + "-" + d.idealHi + " kg \u00b7 Target " + d.target + " kg\n" +
+    "- Dr. Sohil Momin";
+}
+function copySummary(){
+  var s = summaryText();
+  if(!s){ toast(t("invalid")); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(s).then(function(){ toast(t("copied")); }, function(){ toast(t("badFile")); });
+  } else { toast(t("badFile")); }
+}
+function shareSummary(){
+  var s = summaryText();
+  if(!s){ toast(t("invalid")); return; }
+  if(navigator.share){ try{ navigator.share({ title: "Clinical Health Calculator", text: s }).catch(function(){}); }catch(e){ copySummary(); } }
+  else copySummary();
+}
 
 function loadEntry(en){
   el.patient.value = en.patient || "";
@@ -841,6 +984,7 @@ function loadEntry(en){
   state.heightUnit = "cm"; setToggle("heightUnitToggle","cm"); showHeightWraps(); setHeightFromCm(num(en.heightCm));
   state.weightUnit = "kg"; setToggle("weightUnitToggle","kg"); showWeightWraps(); setWeightFromKg(num(en.weightKg));
   el.waist.value = en.waistCm || "";
+  el.hip.value = en.hipCm || "";
   el.activity.value = en.activity || "sedentary";
   calculate();
   window.scrollTo({top:0, behavior:"smooth"});
@@ -858,7 +1002,7 @@ function deleteEntry(idx){
 }
 
 function resetForm(){
-  ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist"].forEach(function(id){ if(el[id]) el[id].value=""; });
+  ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip"].forEach(function(id){ if(el[id]) el[id].value=""; });
   el.activity.value = "sedentary";
   el.fatRatio.value = "balanced";
   el.climate.value = "temperate";
@@ -890,9 +1034,9 @@ function csvCell(v){
 }
 function exportCsv(){
   if(!entries.length){ toast(t("noData")); return; }
-  var headers = ["Timestamp","Patient","Age","Gender","HeightCm","WeightKg","WaistCm","Activity","BMI","BMI_Category","BMR","TDEE","Protein_g","Fat_g","Carbs_g","Fiber_g","Fluid_mL","IBW_kg","AdjBW_kg","BSA_m2","BodyFat_pct","LBM_kg","WHtR","GeneratedBy"];
+  var headers = ["Timestamp","Patient","Age","Gender","HeightCm","WeightKg","WaistCm","HipCm","Activity","BMI","BMI_Category","BMR","TDEE","Protein_g","Fat_g","Carbs_g","Fiber_g","ProteinPerMeal_g","MacroPct","Fluid_mL","IBW_kg","AdjBW_kg","BSA_m2","BodyFat_pct","LBM_kg","WHtR","WHR","IdealLo_kg","IdealHi_kg","Target_kg","GeneratedBy"];
   var rows = entries.map(function(en){
-    return [fmtTs(en.ts), en.patient, en.age, en.gender, en.heightCm, en.weightKg, en.waistCm, en.activity, en.bmi, en.bmiCat, en.bmr, en.tdee, en.protein, en.fat, en.carbs, en.fiber, en.fluidMl, en.ibw, en.abw, en.bsa, en.bf, en.lbm, en.whtr, "Dr. Sohil Momin"].map(csvCell).join(",");
+    return [fmtTs(en.ts), en.patient, en.age, en.gender, en.heightCm, en.weightKg, en.waistCm, en.hipCm, en.activity, en.bmi, en.bmiCat, en.bmr, en.tdee, en.protein, en.fat, en.carbs, en.fiber, en.proteinMeal, en.macroPct, en.fluidMl, en.ibw, en.abw, en.bsa, en.bf, en.lbm, en.whtr, en.whr, en.idealLo, en.idealHi, en.target, "Dr. Sohil Momin"].map(csvCell).join(",");
   });
   var csv = "\uFEFF" + headers.map(csvCell).join(",") + "\n" + rows.join("\n");
   download(csv, "text/csv;charset=utf-8;", "health_calculator_export.csv");
@@ -927,12 +1071,14 @@ function importCsv(text){
     var g = function(k){ var i = idx[k]; return i == null ? "" : (row[i] || "").trim(); };
     var en = {
       ts: Date.now() + r, patient: g("patient"), age: num(g("age")), gender: g("gender") === "F" ? "F" : "M",
-      heightCm: num(g("heightcm")), weightKg: num(g("weightkg")), waistCm: g("waistcm"),
+      heightCm: num(g("heightcm")), weightKg: num(g("weightkg")), waistCm: g("waistcm"), hipCm: g("hipcm"),
       activity: g("activity") || "sedentary", bmi: num(g("bmi")), bmiCat: g("bmi_category"),
       bmr: num(g("bmr")), tdee: num(g("tdee")), protein: num(g("protein_g")), fat: num(g("fat_g")),
       carbs: num(g("carbs_g")), fiber: num(g("fiber_g")), fluidMl: num(g("fluid_ml")),
       ibw: num(g("ibw_kg")), abw: num(g("adjbw_kg")), bsa: g("bsa_m2"), bf: num(g("bodyfat_pct")),
-      lbm: num(g("lbm_kg")), whtr: g("whtr")
+      lbm: num(g("lbm_kg")), whtr: g("whtr"), whr: g("whr"),
+      idealLo: num(g("ideallo_kg")), idealHi: num(g("idealhi_kg")), target: num(g("target_kg")),
+      proteinMeal: num(g("proteinpermeal_g")), macroPct: g("macropct")
     };
     if(en.age > 0 && en.weightKg > 0){ entries.push(en); added++; }
   }
@@ -971,14 +1117,17 @@ function applyTheme(theme){
 }
 
 /* ---------------- wiring ---------------- */
-["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","activity","fatRatio","climate","exercise"].forEach(function(id){
+["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise"].forEach(function(id){
   el[id].addEventListener("input", calculate);
   el[id].addEventListener("change", calculate);
 });
 ["fever","breastfeeding","renal","heart","athlete"].forEach(function(id){ el[id].addEventListener("change", calculate); });
-["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs"].forEach(function(id){
+["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","hip"].forEach(function(id){
   el[id].addEventListener("blur", function(){
-    if(id === "age") flagAge(); else if(id === "weightKg" || id === "weightLbs") flagWeight(); else flagHeight();
+    if(id === "age") flagAge();
+    else if(id === "hip") flagHip();
+    else if(id === "weightKg" || id === "weightLbs") flagWeight();
+    else flagHeight();
   });
 });
 el.filter.addEventListener("input", renderSaved);
@@ -993,6 +1142,8 @@ $("btnReset").addEventListener("click", function(){
 });
 $("btnExport").addEventListener("click", exportCsv);
 $("btnPrint").addEventListener("click", function(){ window.print(); });
+$("btnCopy").addEventListener("click", copySummary);
+$("btnShare").addEventListener("click", shareSummary);
 $("btnImport").addEventListener("click", function(){ el.fileInput.click(); });
 el.fileInput.addEventListener("change", function(){
   var f = el.fileInput.files && el.fileInput.files[0];
@@ -1051,6 +1202,9 @@ window.__chcSelfTest = function(){
   ok("Indian 24 -> overweight", bmiCategory(24,"indian").cls === "over");
   ok("WHO 24 -> normal", bmiCategory(24,"who").cls === "normal");
   ok("BSA 70kg/175cm ~ 1.84", Math.abs(Math.sqrt(70*175/3600) - 1.84) < 0.02);
+  ok("WHR 88/100 = 0.88", Math.abs(88/100 - 0.88) < 1e-9);
+  ok("Indian normal upper = 22.9", normalRange("indian")[1] === 22.9);
+  ok("WHO normal upper = 24.9", normalRange("who")[1] === 24.9);
   var fails = results.filter(function(r){ return r.indexOf("FAIL")===0; }).length;
   console.log(results.join("\n"));
   console.log(fails ? fails + " FAILED" : "All self-tests passed");
