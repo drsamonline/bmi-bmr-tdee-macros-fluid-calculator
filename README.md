@@ -12,14 +12,14 @@ A single-file, offline-capable clinical calculator for adult outpatients — no 
 [![Last commit](https://img.shields.io/github/last-commit/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/commits/main)
 [![Stars](https://img.shields.io/github/stars/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/stargazers)
 
-[![Made with HTML5](https://img.shields.io/badge/Made_with-HTML5-E34F26)](
-[![Made with CSS3](https://img.shields.io/badge/Made_with-CSS3-1572B6)](
-[![Made with JavaScript](https://img.shields.io/badge/Made_with-JavaScript-F7DF1E)](
-[![No dependencies](https://img.shields.io/badge/Dependencies-none-success)](
-[![Offline ready](https://img.shields.io/badge/Offline-ready-success)](
-[![Single file](https://img.shields.io/badge/Single_file-1_HTML-important)](
-[![i18n](https://img.shields.io/badge/i18n-EN_%7C_HI_%7C_GU-orange)](
-[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](
+![Made with HTML5](https://img.shields.io/badge/Made_with-HTML5-E34F26)
+![Made with CSS3](https://img.shields.io/badge/Made_with-CSS3-1572B6)
+![Made with JavaScript](https://img.shields.io/badge/Made_with-JavaScript-F7DF1E)
+![No dependencies](https://img.shields.io/badge/Dependencies-none-success)
+![Offline ready](https://img.shields.io/badge/Offline-ready-success)
+![Single file](https://img.shields.io/badge/Single_file-1_HTML-important)
+![i18n](https://img.shields.io/badge/i18n-EN_%7C_HI_%7C_GU-orange)
+![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
 ---
 
