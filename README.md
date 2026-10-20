@@ -1,29 +1,25 @@
-<div align="center">
-
 # Clinical Health Calculator
 
 **BMI · BMR · TDEE · Macros · Fluids · Body Composition**
 
 A single-file, offline-capable clinical calculator for adult outpatients — no build step, no dependencies, no server, no tracking.
 
-[![Live Demo](https://img.shields.io/badge/LIVE_DEMO-open_app-14b8a6
-[![Download](https://img.shields.io/badge/DOWNLOAD-index.html-0f766e
+[![Live Demo](https://img.shields.io/badge/Live_Demo-open-14b8a6)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/)
+[![Download](https://img.shields.io/badge/Download-index.html-0f766e)](https://raw.githubusercontent.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/main/index.html)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg
-[![Release](https://img.shields.io/github/v/release/drsamonline/bmi-bmr-tdee-macros-fluid-calculator
-[![Last commit](https://img.shields.io/github/last-commit/drsamonline/bmi-bmr-tdee-macros-fluid-calculator
-[![GitHub stars](https://img.shields.io/github/stars/drsamonline/bmi-bmr-tdee-macros-fluid-calculator
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/releases)
+[![Last commit](https://img.shields.io/github/last-commit/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/commits/main)
+[![Stars](https://img.shields.io/github/stars/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/stargazers)
 
-[![Made with HTML5](https://img.shields.io/badge/HTML5-E34F26
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E
-[![No dependencies](https://img.shields.io/badge/dependencies-none-success
-[![Offline ready](https://img.shields.io/badge/offline-ready-success
-[![Single file](https://img.shields.io/badge/single--file-1%20HTML-important
-[![i18n EN | HI | GU](https://img.shields.io/badge/i18n-EN%20%7C%20HI%20%7C%20GU-orange
-[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen
-
-</div>
+[![Made with HTML5](https://img.shields.io/badge/Made_with-HTML5-E34F26)](
+[![Made with CSS3](https://img.shields.io/badge/Made_with-CSS3-1572B6)](
+[![Made with JavaScript](https://img.shields.io/badge/Made_with-JavaScript-F7DF1E)](
+[![No dependencies](https://img.shields.io/badge/Dependencies-none-success)](
+[![Offline ready](https://img.shields.io/badge/Offline-ready-success)](
+[![Single file](https://img.shields.io/badge/Single_file-1_HTML-important)](
+[![i18n](https://img.shields.io/badge/i18n-EN_%7C_HI_%7C_GU-orange)](
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](
 
 ---
 
@@ -108,10 +104,6 @@ This is a **decision-support aid only**. Results are population estimates, not a
 
 Released under the **MIT License** — see [LICENSE](LICENSE). © 2026 Dr. Sohil Momin.
 
-<div align="center">
+---
 
-**[⬆ Back to top](#clinical-health-calculator)**
-
-Made with care by [Dr. Sohil Momin](https://github.com/drsamonline)
-
-</div>
+Made with care by [Dr. Sohil Momin](https://github.com/drsamonline).
