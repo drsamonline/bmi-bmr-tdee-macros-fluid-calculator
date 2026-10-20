@@ -1,10 +1,29 @@
+<div align="center">
+
 # Clinical Health Calculator
 
-**BMI · BMR · TDEE · Macros · Fluids · Body Composition** — a single-file, offline-capable clinical calculator for adult outpatients.
+**BMI · BMR · TDEE · Macros · Fluids · Body Composition**
 
-One self-contained HTML file. No build step, no dependencies, no server, no tracking. Open it and it works — including offline, on phone, tablet and laptop.
+A single-file, offline-capable clinical calculator for adult outpatients — no build step, no dependencies, no server, no tracking.
 
-**Live demo:** https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/
+[![Live Demo](https://img.shields.io/badge/LIVE_DEMO-open_app-14b8a6
+[![Download](https://img.shields.io/badge/DOWNLOAD-index.html-0f766e
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg
+[![Release](https://img.shields.io/github/v/release/drsamonline/bmi-bmr-tdee-macros-fluid-calculator
+[![Last commit](https://img.shields.io/github/last-commit/drsamonline/bmi-bmr-tdee-macros-fluid-calculator
+[![GitHub stars](https://img.shields.io/github/stars/drsamonline/bmi-bmr-tdee-macros-fluid-calculator
+
+[![Made with HTML5](https://img.shields.io/badge/HTML5-E34F26
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E
+[![No dependencies](https://img.shields.io/badge/dependencies-none-success
+[![Offline ready](https://img.shields.io/badge/offline-ready-success
+[![Single file](https://img.shields.io/badge/single--file-1%20HTML-important
+[![i18n EN | HI | GU](https://img.shields.io/badge/i18n-EN%20%7C%20HI%20%7C%20GU-orange
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen
+
+</div>
 
 ---
 
@@ -41,8 +60,8 @@ The original calculator, its clinical design and the choice of formulas are his 
 
 ## Usage
 
-- **Online:** open the live demo link above.
-- **Offline:** download `index.html` and open it in any modern browser.
+- **Online:** open the [live demo](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/).
+- **Offline:** download [`index.html`](https://raw.githubusercontent.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/main/index.html) and open it in any modern browser.
 - **On mobile:** open the file/link, then "Add to Home Screen".
 
 ## Repository contents
@@ -88,3 +107,11 @@ This is a **decision-support aid only**. Results are population estimates, not a
 ## License
 
 Released under the **MIT License** — see [LICENSE](LICENSE). © 2026 Dr. Sohil Momin.
+
+<div align="center">
+
+**[⬆ Back to top](#clinical-health-calculator)**
+
+Made with care by [Dr. Sohil Momin](https://github.com/drsamonline)
+
+</div>
