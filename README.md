@@ -22,13 +22,12 @@ A single-file, offline-capable clinical calculator for adult outpatients — no 
 
 ---
 
-# Clinical Health Calculator
 
 **BMI · BMR · TDEE · Macros · Fluids · Body Composition**
 
 A single-file, offline-capable clinical calculator for adult outpatients — no build step, no dependencies, no server, no tracking.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-open-14b8a6)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-open-14b8a6)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/play/)
 [![Download](https://img.shields.io/badge/Download-index.html-0f766e)](https://raw.githubusercontent.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/main/index.html)
 
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
@@ -80,7 +79,7 @@ The original calculator, its clinical design and the choice of formulas are his 
 
 ## Usage
 
-- **Online:** open the [live demo](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/).
+- **Online:** open the [live demo](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/play/).
 - **Offline:** download [`index.html`](https://raw.githubusercontent.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/main/index.html) and open it in any modern browser.
 - **On mobile:** open the file/link, then "Add to Home Screen".
 
