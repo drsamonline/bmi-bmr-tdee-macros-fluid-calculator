@@ -32,7 +32,6 @@ A single-file, offline-capable clinical calculator for adult outpatients — no 
 
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/releases)
-[![Last commit](https://img.shields.io/github/last-commit/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/commits/main)
 [![Stars](https://img.shields.io/github/stars/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/stargazers)
 
 ![Made with HTML5](https://img.shields.io/badge/Made_with-HTML5-E34F26)
