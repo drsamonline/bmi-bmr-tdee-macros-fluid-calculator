@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/sitemap.xml

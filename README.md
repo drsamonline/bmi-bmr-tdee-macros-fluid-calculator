@@ -1,3 +1,27 @@
+<div align="center">
+
+# Clinical Health Calculator
+
+**BMI · BMR · TDEE · Macros · Fluids · Body Composition**
+
+A single-file, offline-capable clinical calculator for adult outpatients — no build step, no dependencies, no server, no tracking.
+
+[![Landing page](https://img.shields.io/badge/Landing_page-open-14b8a6?logo=githubpages&logoColor=white)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/)
+[![Live demo](https://img.shields.io/badge/Live_demo-open-a3e635?logo=html5&logoColor=white)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/play/)
+[![Source](https://img.shields.io/badge/Source-GitHub-0b1220?logo=github&logoColor=white)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
+
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![Dependencies](https://img.shields.io/badge/Dependencies-none-success)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
+[![Offline ready](https://img.shields.io/badge/Offline-ready-success)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
+[![i18n](https://img.shields.io/badge/i18n-EN_%7C_HI_%7C_GU-orange)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
+[![Last commit](https://img.shields.io/github/last-commit/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/commits/main)
+
+</div>
+
+> **Landing page:** https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/ &nbsp;·&nbsp; **Live demo:** https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/play/
+
+---
+
 # Clinical Health Calculator
 
 **BMI · BMR · TDEE · Macros · Fluids · Body Composition**
