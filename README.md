@@ -6,10 +6,10 @@
 
 A single-file, offline-capable clinical calculator for adult outpatients — no build step, no dependencies, no server, no tracking.
 
-[![Landing page](https://img.shields.io/badge/Landing_page-open-14b8a6
-[![All projects](https://img.shields.io/badge/All%20projects-hub-14b8a6
-[![Live demo](https://img.shields.io/badge/Live_demo-open-a3e635
-[![Source](https://img.shields.io/badge/Source-GitHub-0b1220
+[![Landing page](https://img.shields.io/badge/Landing_page-open-14b8a6?logo=githubpages&logoColor=white)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/)
+[![All projects](https://img.shields.io/badge/All%20projects-hub-14b8a6?logo=githubpages&logoColor=white)](https://drsamonline.github.io/)
+[![Live demo](https://img.shields.io/badge/Live_demo-open-a3e635?logo=html5&logoColor=white)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/play/)
+[![Source](https://img.shields.io/badge/Source-GitHub-0b1220?logo=github&logoColor=white)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
 
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 [![Dependencies](https://img.shields.io/badge/Dependencies-none-success)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
