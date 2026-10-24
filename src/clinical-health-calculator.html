@@ -527,6 +527,8 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
 <div id="toast" role="status" aria-live="polite"></div>
 <input type="file" id="fileInput" accept=".csv,text/csv" class="hidden">
 
+<script>/* export-kit, inlined (MIT, (c) 2026 Dr Sohil Momin) */
+!function(e){var t=function(){"use strict";var e="1.0.0";function t(e){if(null==e)return new Uint8Array(0);if(e instanceof Uint8Array)return e;if("undefined"!=typeof ArrayBuffer&&e instanceof ArrayBuffer)return new Uint8Array(e);if("undefined"!=typeof ArrayBuffer&&ArrayBuffer.isView&&ArrayBuffer.isView(e))return new Uint8Array(e.buffer,e.byteOffset,e.byteLength);if("string"==typeof e)return n(e);throw new TypeError("export-kit: cannot convert "+typeof e+" to bytes")}function n(e){if("undefined"!=typeof TextEncoder)return(new TextEncoder).encode(e);var t,n,r=[];for(t=0;t<e.length;t++)if((n=e.charCodeAt(t))<128)r.push(n);else if(n<2048)r.push(192|n>>6,128|63&n);else if(n>=55296&&n<=56319&&t+1<e.length){n=65536+(n-55296<<10)+(e.charCodeAt(++t)-56320),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n)}else r.push(224|n>>12,128|n>>6&63,128|63&n);return new Uint8Array(r)}var r=function(){var e,t,n,r=new Uint32Array(256);for(t=0;t<256;t++){for(e=t,n=0;n<8;n++)e=1&e?3988292384^e>>>1:e>>>1;r[t]=e>>>0}return r}();function u(e){var n,u=t(e),o=4294967295;for(n=0;n<u.length;n++)o=r[255&(o^u[n])]^o>>>8;return(4294967295^o)>>>0}function o(){this.chunks=[],this.len=0}function i(e){return(31&e.getHours())<<11|(63&e.getMinutes())<<5|e.getSeconds()/2&31}function f(e){return(e.getFullYear()-1980&127)<<9|(e.getMonth()+1&15)<<5|31&e.getDate()}function s(e){e=e||[];var r,s=new o,c=[],a=0,l=new Date;for(r=0;r<e.length;r++){var h=e[r],d=n(h.name||"file"+r),p=t(h.data),y=u(p),b=h.date||l,v=i(b),g=f(b),w=new o;w.u32(67324752).u16(20).u16(2048).u16(0).u16(v).u16(g).u32(y).u32(p.length).u32(p.length).u16(d.length).u16(0).bytes(d).bytes(p);var U=w.done();s.bytes(U),c.push({name:d,crc:y,size:p.length,t:v,dt:g,offset:a}),a+=U.length}var m=a,A=0;for(r=0;r<c.length;r++){var k=c[r],L=new o;L.u32(33639248).u16(20).u16(20).u16(2048).u16(0).u16(k.t).u16(k.dt).u32(k.crc).u32(k.size).u32(k.size).u16(k.name.length).u16(0).u16(0).u16(0).u16(0).u32(0).u32(k.offset).bytes(k.name);var x=L.done();s.bytes(x),A+=x.length}var B=new o;return B.u32(101010256).u16(0).u16(0).u16(c.length).u16(c.length).u32(A).u32(m).u16(0),s.bytes(B.done()),s.done()}function c(){return"undefined"!=typeof document&&"undefined"!=typeof Blob}function a(e){if("undefined"==typeof URL||!URL.createObjectURL)throw new Error("export-kit: URL.createObjectURL unavailable");return URL.createObjectURL(e)}function l(e){try{"undefined"!=typeof URL&&URL.revokeObjectURL&&URL.revokeObjectURL(e)}catch(e){}}function h(e,n){if("undefined"==typeof Blob)throw new Error("export-kit: Blob unavailable in this environment");return e instanceof Blob?e:new Blob([t(e)],{type:n||"application/octet-stream"})}function d(e,t,n){if(!c())throw new Error("export-kit: save() needs a browser (no document/Blob here)");var r=h(t,n),u=a(r),o=document.createElement("a");return o.href=u,o.download=e||"download",o.rel="noopener",document.body.appendChild(o),o.click(),document.body.removeChild(o),setTimeout(function(){l(u)},1e3),r}function p(e,t,n){return d(e,t,n||"text/plain;charset=utf-8")}function y(e,t,n){return d(e,JSON.stringify(t,null,!1===n?0:2),"application/json")}function b(e,t){return d(e,t,"text/csv;charset=utf-8")}function v(e,t,n){return d(e,t,n||"application/octet-stream")}function g(e,t){return d(e,s(t),"application/zip")}return o.prototype.u16=function(e){return this.chunks.push([255&e,e>>>8&255]),this.len+=2,this},o.prototype.u32=function(e){return this.chunks.push([255&e,e>>>8&255,e>>>16&255,e>>>24&255]),this.len+=4,this},o.prototype.bytes=function(e){return this.chunks.push(e),this.len+=e.length,this},o.prototype.done=function(){var e,t,n,r=new Uint8Array(this.len),u=0;for(e=0;e<this.chunks.length;e++)if((n=this.chunks[e])instanceof Uint8Array)r.set(n,u),u+=n.length;else for(t=0;t<n.length;t++)r[u++]=n[t];return r},{version:e,save:d,text:p,json:y,csv:b,blob:v,zip:s,saveZip:g,crc32:u,toBytes:t,utf8Encode:n,blobUrl:a,revoke:l}}();"undefined"!=typeof module&&module.exports&&(module.exports=t),e.Export=t}("undefined"!=typeof self?self:this);</script>
 <script>
 (function(){
 "use strict";
@@ -1299,12 +1301,11 @@ function importCsv(text){
   toast(added + " " + t("importedMsg"));
 }
 function download(content, type, name){
-  var blob = new Blob([content], { type: type });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a");
-  a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  /* RETROFIT: delegate to the shared kit instead of hand-rolling the
+     Blob -> objectURL -> <a download> dance. export-kit.js is vendored in this
+     repo, and the kit's own header names this exact code as what it exists to
+     replace. The app's own signature is unchanged, so its callers are too. */
+  return Export.save(name, content, type);
 }
 
 /* ---------------- toast ---------------- */
