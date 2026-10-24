@@ -58,6 +58,20 @@ setTimeout(() => {
   ok("CHA2DS2-VASc: + prior stroke = 8", txt("rChads") === "8");
   ok("the working panel includes CHA2DS2-VASc", [...d.querySelectorAll("#working li")].some((li) => li.textContent.startsWith("CHA2DS2-VASc")));
 
+
+  // RETROFIT (kit-export-kit): the CSV export must DELEGATE to the shared kit,
+  // not hand-roll the Blob -> objectURL -> <a download> dance. Stub the kit and
+  // assert the app calls it with the filename and the CSV text.
+  const calls = [];
+  w.Export = w.Export || {};              // guarded, so this fails cleanly on an un-retrofitted build
+  w.Export.save = function () { calls.push([].slice.call(arguments)); return true; };
+  fire("age", "40"); fire("heightCm", "175"); fire("weightKg", "70");
+  d.getElementById("btnSave").dispatchEvent(new w.Event("click"));
+  d.getElementById("btnExport").dispatchEvent(new w.Event("click"));
+  ok("export delegates to the shared kit (Export.save called)", calls.length === 1);
+  ok("export passes the filename + the CSV text", !!calls[0] && calls[0][0] === "health_calculator_export.csv" && /Timestamp/.test(calls[0][1]));
+  ok("export passes a CSV mime type", !!calls[0] && /text\/csv/.test(calls[0][2]));
+
   console.log(fail ? "\n" + fail + " FAILED" : "\nAll tests passed");
   process.exit(fail ? 1 : 0);
 }, 500);
