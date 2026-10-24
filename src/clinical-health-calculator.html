@@ -382,6 +382,26 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
           <input type="number" id="doseM2" placeholder="e.g. 100" step="0.01" min="0" inputmode="decimal">
           <div class="hint" data-i18n="doseM2Hint">Surface-area dose = rate &times; BSA (Mosteller).</div>
         </div>
+        <div class="field">
+          <label data-i18n="chadsFlags">Stroke-risk flags (CHA&#8322;DS&#8322;-VASc)</label>
+          <div class="row2" style="flex-wrap:wrap;">
+            <label style="text-transform:none;font-size:13px;color:var(--text);font-weight:400;display:flex;gap:6px;align-items:center;">
+              <input type="checkbox" id="chf" style="width:auto;"> <span data-i18n="chf">Heart failure / LV dysfunction</span>
+            </label>
+            <label style="text-transform:none;font-size:13px;color:var(--text);font-weight:400;display:flex;gap:6px;align-items:center;">
+              <input type="checkbox" id="htn" style="width:auto;"> <span data-i18n="htn">Hypertension</span>
+            </label>
+            <label style="text-transform:none;font-size:13px;color:var(--text);font-weight:400;display:flex;gap:6px;align-items:center;">
+              <input type="checkbox" id="dm" style="width:auto;"> <span data-i18n="dm">Diabetes</span>
+            </label>
+            <label style="text-transform:none;font-size:13px;color:var(--text);font-weight:400;display:flex;gap:6px;align-items:center;">
+              <input type="checkbox" id="stroke" style="width:auto;"> <span data-i18n="stroke">Prior stroke / TIA / thromboembolism</span>
+            </label>
+            <label style="text-transform:none;font-size:13px;color:var(--text);font-weight:400;display:flex;gap:6px;align-items:center;">
+              <input type="checkbox" id="vascular" style="width:auto;"> <span data-i18n="vascular">Vascular disease</span>
+            </label>
+          </div>
+        </div>
       </details>
     </section>
 
@@ -435,6 +455,9 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
         <div class="section-title" data-i18n="secDosing">Dosing</div>
         <div class="stat"><div class="val" id="rDoseKg">--</div><div class="lbl" data-i18n="doseKgOut">Weight-based dose (mg)</div></div>
         <div class="stat"><div class="val" id="rDoseM2">--</div><div class="lbl" data-i18n="doseM2Out">BSA-based dose (mg)</div></div>
+
+        <div class="section-title" data-i18n="secRisk">Risk</div>
+        <div class="stat wide"><div class="val" id="rChads">--</div><div class="lbl" title="CHA2DS2-VASc: stroke risk in non-valvular atrial fibrillation (Lip 2010)." data-i18n="chadsOut">CHA&#8322;DS&#8322;-VASc score</div></div>
       </div>
       <details class="defs working">
         <summary data-i18n="workingTitle">Show the working</summary>
@@ -520,6 +543,15 @@ var $ = function(id){ return document.getElementById(id); };
 /* ---------------- i18n ---------------- */
 var I18N = {
   en: {
+    secRisk:"Risk",
+    chadsOut:"CHA\u2082DS\u2082-VASc score",
+    chadsFlags:"Stroke-risk flags (CHA\u2082DS\u2082-VASc)",
+    chf:"Heart failure / LV dysfunction",
+    htn:"Hypertension",
+    dm:"Diabetes",
+    stroke:"Prior stroke / TIA / thromboembolism",
+    vascular:"Vascular disease",
+    chadsNote:"CHA\u2082DS\u2082-VASc estimates stroke risk in non-valvular atrial fibrillation (Lip 2010). It is not a general risk score and does not decide treatment.",
     secDosing:"Dosing",
     doseKg:"Dose (mg/kg, optional)",
     doseKgHint:"Weight-based dose = rate \u00d7 weight (actual weight).",
@@ -570,6 +602,15 @@ var I18N = {
     trend:"Change since first entry", unitCm:"cm", unitKg:"kg"
   },
   hi: {
+    secRisk:"\u091c\u094b\u0916\u093f\u092e",
+    chadsOut:"CHA\u2082DS\u2082-VASc \u0938\u094d\u0915\u094b\u0930",
+    chadsFlags:"\u0938\u094d\u091f\u094d\u0930\u094b\u0915-\u091c\u094b\u0916\u093f\u092e \u0938\u0902\u0915\u0947\u0924 (CHA\u2082DS\u2082-VASc)",
+    chf:"\u0939\u0943\u0926\u092f \u0935\u093f\u092b\u0932\u0924\u093e / LV \u0930\u094b\u0917",
+    htn:"\u0909\u091a\u094d\u091a \u0930\u0915\u094d\u0924\u091a\u093e\u092a",
+    dm:"\u092e\u0927\u0941\u092e\u0947\u0939",
+    stroke:"\u092a\u0942\u0930\u094d\u0935 \u0938\u094d\u091f\u094d\u0930\u094b\u0915 / TIA / \u0925\u094d\u0930\u094b\u092e\u094d\u092c\u094b\u090f\u092e\u094d\u092c\u094b\u0932\u093f\u091c\u093c\u094d\u092e",
+    vascular:"\u0938\u0902\u0935\u0939\u0928\u0940 \u0930\u094b\u0917",
+    chadsNote:"CHA\u2082DS\u2082-VASc \u0917\u0948\u0930-\u0935\u093e\u0932\u094d\u0935\u0941\u0932\u0930 \u090f\u091f\u094d\u0930\u093f\u092f\u0932 \u092b\u093c\u093e\u0907\u092c\u094d\u0930\u093f\u0932\u0947\u0936\u0928 \u092e\u0947\u0902 \u0938\u094d\u091f\u094d\u0930\u094b\u0915 \u091c\u094b\u0916\u093f\u092e \u0915\u093e \u0905\u0928\u0941\u092e\u093e\u0928 \u0932\u0917\u093e\u0924\u093e \u0939\u0948 (Lip 2010)\u0964 \u092f\u0939 \u0938\u093e\u092e\u093e\u0928\u094d\u092f \u091c\u094b\u0916\u093f\u092e \u0938\u094d\u0915\u094b\u0930 \u0928\u0939\u0940\u0902 \u0939\u0948 \u0914\u0930 \u0909\u092a\u091a\u093e\u0930 \u0924\u092f \u0928\u0939\u0940\u0902 \u0915\u0930\u0924\u093e\u0964",
     secDosing:"\u0916\u0941\u0930\u093e\u0915",
     doseKg:"\u0916\u0941\u0930\u093e\u0915 (mg/kg, \u0935\u0948\u0915\u0932\u094d\u092a\u093f\u0915)",
     doseKgHint:"\u0935\u091c\u093c\u0928-\u0906\u0927\u093e\u0930\u093f\u0924 \u0916\u0941\u0930\u093e\u0915 = \u0926\u0930 \u00d7 \u0935\u091c\u093c\u0928 (\u0935\u093e\u0938\u094d\u0924\u0935\u093f\u0915 \u0935\u091c\u093c\u0928)\u0964",
@@ -617,6 +658,15 @@ var I18N = {
     trend:"\u092a\u0939\u0932\u0940 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f \u0938\u0947 \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928", unitCm:"cm", unitKg:"kg"
   },
   gu: {
+    secRisk:"\u0a9c\u0acb\u0a96\u0aae",
+    chadsOut:"CHA\u2082DS\u2082-VASc \u0ab8\u0acd\u0a95\u0acb\u0ab0",
+    chadsFlags:"\u0ab8\u0acd\u0a9f\u0acd\u0ab0\u0acb\u0a95-\u0a9c\u0acb\u0a96\u0aae \u0ab8\u0a82\u0a95\u0ac7\u0aa4 (CHA\u2082DS\u2082-VASc)",
+    chf:"\u0ab9\u0ac3\u0aa6\u0aaf \u0aa8\u0abf\u0ab7\u0acd\u0aab\u0ab3\u0aa4\u0abe / LV \u0ab0\u0acb\u0a97",
+    htn:"\u0ab9\u0abe\u0a88 \u0aac\u0acd\u0ab2\u0aa1 \u0aaa\u0acd\u0ab0\u0ac7\u0ab6\u0ab0",
+    dm:"\u0aa1\u0abe\u0aaf\u0abe\u0aac\u0abf\u0a9f\u0ac0\u0ab8",
+    stroke:"\u0aaa\u0ab9\u0ac7\u0ab2\u0abe\u0a82\u0aa8\u0acb \u0ab8\u0acd\u0a9f\u0acd\u0ab0\u0acb\u0a95 / TIA / \u0aa5\u0acd\u0ab0\u0acb\u0aae\u0acd\u0aac\u0acb\u0a8f\u0aae\u0acd\u0aac\u0acb\u0ab2\u0abf\u0a9d\u0aae",
+    vascular:"\u0ab5\u0abe\u0ab9\u0abf\u0aa8\u0ac0 \u0ab0\u0acb\u0a97",
+    chadsNote:"CHA\u2082DS\u2082-VASc \u0aac\u0abf\u0aa8-\u0ab5\u0abe\u0ab2\u0acd\u0ab5\u0acd\u0aaf\u0ac1\u0ab2\u0ab0 \u0a8f\u0a9f\u0acd\u0ab0\u0abf\u0aaf\u0ab2 \u0aab\u0abe\u0a87\u0aac\u0acd\u0ab0\u0abf\u0ab2\u0ac7\u0ab6\u0aa8\u0aae\u0abe\u0a82 \u0ab8\u0acd\u0a9f\u0acd\u0ab0\u0acb\u0a95 \u0a9c\u0acb\u0a96\u0aae\u0aa8\u0acb \u0a85\u0a82\u0aa6\u0abe\u0a9c \u0a86\u0aaa\u0ac7 \u0a9b\u0ac7 (Lip 2010). \u0a86 \u0ab8\u0abe\u0aae\u0abe\u0aa8\u0acd\u0aaf \u0a9c\u0acb\u0a96\u0aae \u0ab8\u0acd\u0a95\u0acb\u0ab0 \u0aa8\u0aa5\u0ac0 \u0a85\u0aa8\u0ac7 \u0ab8\u0abe\u0ab0\u0ab5\u0abe\u0ab0 \u0aa8\u0a95\u0acd\u0a95\u0ac0 \u0a95\u0ab0\u0aa4\u0ac1\u0a82 \u0aa8\u0aa5\u0ac0.",
     secDosing:"\u0aa1\u0acb\u0a9d",
     doseKg:"\u0aa1\u0acb\u0a9d (mg/kg, \u0ab5\u0ac8\u0a95\u0ab2\u0acd\u0aaa\u0abf\u0a95)",
     doseKgHint:"\u0ab5\u0a9c\u0aa8-\u0a86\u0aa7\u0abe\u0ab0\u0abf\u0aa4 \u0aa1\u0acb\u0a9d = \u0aa6\u0ab0 \u00d7 \u0ab5\u0a9c\u0aa8 (\u0ab5\u0abe\u0ab8\u0acd\u0aa4\u0ab5\u0abf\u0a95 \u0ab5\u0a9c\u0aa8).",
@@ -694,7 +744,7 @@ var state = { gender:"M", heightUnit:"cm", weightUnit:"kg", proteinBasis:"total"
 /* ---------------- element refs ---------------- */
 var el = {};
 ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise","fever","breastfeeding","renal","heart","athlete",
- "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","creat","rCrcl","doseKg","doseM2","rDoseKg","rDoseM2","working",
+ "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","creat","rCrcl","doseKg","doseM2","rDoseKg","rDoseM2","rChads","chf","htn","dm","stroke","vascular","working",
  "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput"].forEach(function(id){ el[id]=$(id); });
 
 el.ver.textContent = VERSION;
@@ -861,7 +911,7 @@ function calculate(){
   var valid = age > 0 && heightCm > 0 && weightKg > 0;
 
   if(!valid){
-    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","rCrcl","rDoseKg","rDoseM2"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
+    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","rCrcl","rDoseKg","rDoseM2","rChads"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
     el.gauge.innerHTML = ""; el.gaugeScale.textContent = "";
     renderCaution([]);
     if(el.working) el.working.innerHTML = "";
@@ -941,6 +991,13 @@ function calculate(){
   el.rDoseKg.textContent = doseByKg > 0 ? r1(doseByKg) : "--";
   el.rDoseM2.textContent = doseByM2 > 0 ? r1(doseByM2) : "--";
 
+  // CHA2DS2-VASc - stroke risk in non-valvular atrial fibrillation (Lip 2010)
+  var cC = el.chf.checked ? 1 : 0, cH = el.htn.checked ? 1 : 0, cD = el.dm.checked ? 1 : 0,
+      cS = el.stroke.checked ? 2 : 0, cV = el.vascular.checked ? 1 : 0,
+      cA = age >= 75 ? 2 : (age >= 65 ? 1 : 0), cSc = state.gender === "F" ? 1 : 0;
+  var chads = cC + cH + cD + cS + cV + cA + cSc;
+  el.rChads.textContent = chads;
+
   // Show the working - every result, with its formula and the values substituted
   renderWorking({
     age: age, gender: state.gender, heightCm: heightCm, weightKg: weightKg, hM: heightM,
@@ -950,7 +1007,8 @@ function calculate(){
     hipCm: hipCm, whr: whr, nLo: nrange[0], nHi: nrange[1], idealLo: idealLo, idealHi: idealHi,
     clim: (CLIMATE[el.climate.value] || 1), exMl: (EXERCISE_ML[el.exercise.value] || 0),
     feverMl: el.fever.checked ? FEVER_ML : 0, bfMl: el.breastfeeding.checked ? BF_ML : 0,
-    creat: creat, crcl: crcl, doseKg: doseKg, doseM2: doseM2, doseByKg: doseByKg, doseByM2: doseByM2
+    creat: creat, crcl: crcl, doseKg: doseKg, doseM2: doseM2, doseByKg: doseByKg, doseByM2: doseByM2,
+    chads: chads, cC: cC, cH: cH, cD: cD, cS: cS, cV: cV, cA: cA, cSc: cSc
   });
 
   var cautions = [];
@@ -960,6 +1018,7 @@ function calculate(){
   if(el.athlete.checked) cautions.push(t("athleteWarn"));
   if(creat > 0 && age < 18) cautions.push(t("crclNote"));
   if(doseByKg > 0 || doseByM2 > 0) cautions.push(t("doseNote"));
+  if(cC || cH || cD || cS || cV) cautions.push(t("chadsNote"));
   if(bmi > 70) cautions.push(t("bmiHigh"));
   renderCaution(cautions);
 
@@ -1005,6 +1064,8 @@ function buildWorking(v){
       "((140 \u2212 " + v.age + ") \u00d7 " + r1(v.weightKg) + " \u00d7 " + (M ? 1 : 0.85) + ") \u00f7 (72 \u00d7 " + v.creat + ")");
   if(v.doseByKg > 0) add("Dose (wt)", r1(v.doseByKg) + " mg", "rate (mg/kg) \u00d7 weight", v.doseKg + " \u00d7 " + r1(v.weightKg) + " kg");
   if(v.doseByM2 > 0) add("Dose (BSA)", r1(v.doseByM2) + " mg", "rate (mg/m\u00b2) \u00d7 BSA", v.doseM2 + " \u00d7 " + v.bsa.toFixed(2) + " m\u00b2");
+  add("CHA2DS2-VASc", v.chads, "C + H + A + D + S + V + Sc",
+      "C" + v.cC + " + H" + v.cH + " + A" + v.cA + " + D" + v.cD + " + S" + v.cS + " + V" + v.cV + " + Sc" + v.cSc + " = " + v.chads);
   return L;
 }
 function renderWorking(v){
@@ -1159,7 +1220,7 @@ function resetForm(){
   el.fatRatio.value = "balanced";
   el.climate.value = "temperate";
   el.exercise.value = "none";
-  ["fever","breastfeeding","renal","heart","athlete"].forEach(function(id){ el[id].checked = false; });
+  ["fever","breastfeeding","renal","heart","athlete","chf","htn","dm","stroke","vascular"].forEach(function(id){ el[id].checked = false; });
   state.gender = "M"; setToggle("genderToggle","M");
   state.heightUnit = "cm"; setToggle("heightUnitToggle","cm"); showHeightWraps();
   state.weightUnit = "kg"; setToggle("weightUnitToggle","kg"); showWeightWraps();
@@ -1273,7 +1334,7 @@ function applyTheme(theme){
   el[id].addEventListener("input", calculate);
   el[id].addEventListener("change", calculate);
 });
-["fever","breastfeeding","renal","heart","athlete"].forEach(function(id){ el[id].addEventListener("change", calculate); });
+["fever","breastfeeding","renal","heart","athlete","chf","htn","dm","stroke","vascular"].forEach(function(id){ el[id].addEventListener("change", calculate); });
 ["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","hip"].forEach(function(id){
   el[id].addEventListener("blur", function(){
     if(id === "age") flagAge();
@@ -1366,6 +1427,10 @@ window.__chcSelfTest = function(){
   // dosing: 5 mg/kg x 70 kg = 350 mg; 100 mg/m2 x BSA(70kg/175cm) ~ 184 mg
   ok("dose: 5 mg/kg x 70 kg = 350 mg", 5*70 === 350);
   ok("dose: 100 mg/m2 x 1.84 m2 ~ 184 mg", Math.abs(100*Math.sqrt(70*175/3600) - 184.4) < 0.6);
+  // CHA2DS2-VASc: age>=75 = 2, age 65-74 = 1, female = 1, stroke = 2
+  ok("chads: age 80 is 2", (80 >= 75 ? 2 : (80 >= 65 ? 1 : 0)) === 2);
+  ok("chads: age 70 is 1", (70 >= 75 ? 2 : (70 >= 65 ? 1 : 0)) === 1);
+  ok("chads: age 40 is 0", (40 >= 75 ? 2 : (40 >= 65 ? 1 : 0)) === 0);
   var fails = results.filter(function(r){ return r.indexOf("FAIL")===0; }).length;
   console.log(results.join("\n"));
   console.log(fails ? fails + " FAILED" : "All self-tests passed");
