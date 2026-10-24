@@ -43,6 +43,7 @@ The original calculator, its clinical design and the choice of formulas are his 
 | **Fluids** | Daily fluid requirement (30 mL/kg baseline, adjusted for climate, exercise, fever and breastfeeding), shown in mL / L / glasses |
 | **Renal** | Creatinine clearance (Cockcroft&ndash;Gault) from a serum creatinine, with its formula and limits |
 | **Dosing** | Weight-based (rate &times; weight) and surface-area-based (rate &times; BSA) dose, with the unit shown at every step |
+| **Risk scores** | CHA₂DS₂-VASc — stroke risk in non-valvular atrial fibrillation, with its source and intended population |
 | **Risk & flags** | Indian/Asia-Pacific **and** WHO BMI cut-offs; cautions for renal/hepatic disease, heart failure, athletes and paediatric patients |
 
 ## Features
@@ -76,6 +77,10 @@ The original calculator, its clinical design and the choice of formulas are his 
 To rebuild after editing the source, minify `src/clinical-health-calculator.html` into `index.html` with any HTML minifier.
 
 ## Changelog
+
+**v2.4.0**
+- New: **CHA₂DS₂-VASc** — a stroke-risk score for non-valvular atrial fibrillation, shown with its components in the "Show the working" panel and its intended population stated.
+- Self-tests extended: CHA₂DS₂-VASc age-band checks.
 
 **v2.3.0**
 - New: **dosing** — weight-based (mg/kg × weight) and surface-area-based (mg/m² × BSA) dose, each shown with its formula in the "Show the working" panel.
@@ -112,6 +117,7 @@ To rebuild after editing the source, minify `src/clinical-health-calculator.html
 - **Creatinine clearance** — Cockcroft DW, Gault MH. *Nephron* 1976;16:31–41. Adults 18+; needs steady-state renal function and a steady-state serum creatinine; not valid in pregnancy or at extremes of body size.
 - **Show the working** — each result is rendered with its formula and the substituted values; the arithmetic is the app's own, not a lookup.
 - **Dosing** — weight-based (rate × actual weight) and surface-area-based (rate × BSA, Mosteller). Arithmetic only; not a prescribing decision — check the product's own dosing and the patient.
+- **CHA₂DS₂-VASc** — Lip GYH, et al. *Chest* 2010;137:263–72. Congestive heart failure (1), hypertension (1), age ≥75 (2), diabetes (1), prior stroke/TIA/thromboembolism (2), vascular disease (1), age 65–74 (1), female sex (1). **Intended population: non-valvular atrial fibrillation.** Not a general risk score; it does not decide treatment.
 
 ## Tests
 

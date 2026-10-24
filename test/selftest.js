@@ -51,6 +51,13 @@ setTimeout(() => {
   fire("doseKg", ""); fire("doseM2", "");
   ok("no dose -> blank", txt("rDoseKg") === "--" && txt("rDoseM2") === "--");
 
+  const tick = (id, on) => { const e = d.getElementById(id); e.checked = on; e.dispatchEvent(new w.Event("change", { bubbles: true })); };
+  fire("age", "80"); gender("F"); tick("chf", true); tick("htn", true); tick("dm", true);
+  ok("CHA2DS2-VASc: age 80 + female + CHF + HTN + DM = 6", txt("rChads") === "6");
+  tick("stroke", true);
+  ok("CHA2DS2-VASc: + prior stroke = 8", txt("rChads") === "8");
+  ok("the working panel includes CHA2DS2-VASc", [...d.querySelectorAll("#working li")].some((li) => li.textContent.startsWith("CHA2DS2-VASc")));
+
   console.log(fail ? "\n" + fail + " FAILED" : "\nAll tests passed");
   process.exit(fail ? 1 : 0);
 }, 500);
