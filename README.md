@@ -42,6 +42,7 @@ The original calculator, its clinical design and the choice of formulas are his 
 | **Macros** | Protein, fat, carbohydrate and fiber; protein per meal; macro split (% of calories) |
 | **Fluids** | Daily fluid requirement (30 mL/kg baseline, adjusted for climate, exercise, fever and breastfeeding), shown in mL / L / glasses |
 | **Renal** | Creatinine clearance (Cockcroft&ndash;Gault) from a serum creatinine, with its formula and limits |
+| **Dosing** | Weight-based (rate &times; weight) and surface-area-based (rate &times; BSA) dose, with the unit shown at every step |
 | **Risk & flags** | Indian/Asia-Pacific **and** WHO BMI cut-offs; cautions for renal/hepatic disease, heart failure, athletes and paediatric patients |
 
 ## Features
@@ -76,6 +77,10 @@ To rebuild after editing the source, minify `src/clinical-health-calculator.html
 
 ## Changelog
 
+**v2.3.0**
+- New: **dosing** — weight-based (mg/kg × weight) and surface-area-based (mg/m² × BSA) dose, each shown with its formula in the "Show the working" panel.
+- Self-tests extended: dosing known-value checks.
+
 **v2.2.0**
 - **Show the working** — a panel that lists every result with its formula and the values substituted, so a number can be checked rather than trusted.
 - New: **creatinine clearance** (Cockcroft–Gault) from an optional serum creatinine, with its formula, units and limits.
@@ -106,6 +111,7 @@ To rebuild after editing the source, minify `src/clinical-health-calculator.html
 - **Waist** — IDF / WHO Asia-Pacific cut-offs (men >90 cm, women >80 cm); waist-to-hip >0.90 (men) / >0.85 (women).
 - **Creatinine clearance** — Cockcroft DW, Gault MH. *Nephron* 1976;16:31–41. Adults 18+; needs steady-state renal function and a steady-state serum creatinine; not valid in pregnancy or at extremes of body size.
 - **Show the working** — each result is rendered with its formula and the substituted values; the arithmetic is the app's own, not a lookup.
+- **Dosing** — weight-based (rate × actual weight) and surface-area-based (rate × BSA, Mosteller). Arithmetic only; not a prescribing decision — check the product's own dosing and the patient.
 
 ## Tests
 
