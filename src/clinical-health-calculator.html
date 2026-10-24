@@ -177,6 +177,13 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
   .card-results{position:static !important;}
   .stat .val{color:#000;}
 }
+
+/* ---------- show the working ---------- */
+.working-list ul{list-style:none;margin:8px 0 0;padding:0}
+.working-list li{padding:6px 0;border-bottom:1px solid var(--line, #2a2f3a);font-size:13px}
+.working-list li b{display:block;font-weight:600}
+.working-list li span{color:var(--muted, #9aa3b2);font-variant-numeric:tabular-nums}
+.working-list .wk-note{font-size:12px;color:var(--muted, #9aa3b2);margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -360,6 +367,11 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
             </label>
           </div>
         </div>
+        <div class="field">
+          <label for="creat" data-i18n="creat">Serum creatinine (mg/dL, optional)</label>
+          <input type="number" id="creat" placeholder="e.g. 1.0" step="0.01" min="0.1" max="20" inputmode="decimal">
+          <div class="hint" data-i18n="creatHint">Used for creatinine clearance (Cockcroft-Gault). Leave blank to skip.</div>
+        </div>
       </details>
     </section>
 
@@ -406,7 +418,14 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
 
         <div class="section-title" data-i18n="secFluid">Fluids</div>
         <div class="stat wide fluid"><div class="val info" id="rFluid">--</div><div class="lbl" data-i18n="fluidLbl">Daily fluid requirement</div></div>
+
+        <div class="section-title" data-i18n="secRenal">Renal</div>
+        <div class="stat wide"><div class="val" id="rCrcl">--</div><div class="lbl" title="Creatinine clearance (Cockcroft-Gault) from age, weight and serum creatinine." data-i18n="crcl">Creatinine clearance (mL/min)</div></div>
       </div>
+      <details class="defs working">
+        <summary data-i18n="workingTitle">Show the working</summary>
+        <div class="working-list" id="working"></div>
+      </details>
       <div class="caution" id="caution"></div>
       <details class="defs">
         <summary data-i18n="defsTitle">What these mean</summary>
@@ -416,6 +435,7 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
           <dt>Lean mass</dt><dd>Fat-free mass = weight &times; (1 &minus; body-fat %).</dd>
           <dt>Waist / height &amp; waist / hip</dt><dd>Central-obesity risk ratios. Waist-to-height &ge;0.5; waist-to-hip &gt;0.90 (men) or &gt;0.85 (women) is elevated.</dd>
           <dt>BSA</dt><dd>Body surface area (Mosteller), used for drug dosing.</dd>
+          <dt>CrCl</dt><dd>Creatinine clearance (Cockcroft&ndash;Gault) from age, weight and serum creatinine. A population estimate; needs steady-state renal function.</dd>
           <dt>Ideal / adjusted weight</dt><dd>Devine ideal body weight, and IBW + 0.25 &times; (actual &minus; IBW).</dd>
           <dt>BMR / TDEE</dt><dd>Resting energy (Mifflin-St Jeor) and total daily energy with the activity multiplier.</dd>
           <dt>Protein / fat / carbs / fiber</dt><dd>Daily macro targets; carbohydrate fills the remaining calories.</dd>
@@ -486,6 +506,13 @@ var $ = function(id){ return document.getElementById(id); };
 /* ---------------- i18n ---------------- */
 var I18N = {
   en: {
+    workingTitle:"Show the working",
+    workingNote:"Every result, with the formula and your values substituted \u2014 so you can check it rather than trust it. Population estimates, not a diagnosis.",
+    secRenal:"Renal",
+    crcl:"Creatinine clearance (mL/min)",
+    crclNote:"Cockcroft\u2013Gault, adults 18+. Needs a steady-state serum creatinine; not valid in unstable renal function, pregnancy, or extremes of body size.",
+    creat:"Serum creatinine (mg/dL, optional)",
+    creatHint:"Used for creatinine clearance (Cockcroft\u2013Gault). Leave blank to skip.",
     title:"Clinical Health Calculator", subtitle:"BMI \u00b7 BMR \u00b7 TDEE \u00b7 Macros \u00b7 Fluids \u00b7 Body composition",
     author:"Developed by Dr. Sohil Momin, BHMS",
     disclaimer:"Decision-support aid only. Results are population estimates, not a diagnosis, and do not replace clinical judgement. Use adjusted weights and clinical context for individual patients.",
@@ -521,6 +548,13 @@ var I18N = {
     trend:"Change since first entry", unitCm:"cm", unitKg:"kg"
   },
   hi: {
+    workingTitle:"\u0917\u0923\u0928\u093e \u0926\u0947\u0916\u0947\u0902",
+    workingNote:"\u0939\u0930 \u092a\u0930\u093f\u0923\u093e\u092e, \u0938\u0942\u0924\u094d\u0930 \u0914\u0930 \u0906\u092a\u0915\u0947 \u092e\u093e\u0928\u094b\u0902 \u0915\u0947 \u0938\u093e\u0925 \u2014 \u0924\u093e\u0915\u093f \u0906\u092a \u091c\u093e\u0901\u091a \u0938\u0915\u0947\u0902, \u0915\u0947\u0935\u0932 \u092d\u0930\u094b\u0938\u093e \u0928 \u0915\u0930\u0947\u0902\u0964 \u092f\u0947 \u091c\u0928\u0938\u0902\u0916\u094d\u092f\u093e-\u0906\u0927\u093e\u0930\u093f\u0924 \u0905\u0928\u0941\u092e\u093e\u0928 \u0939\u0948\u0902, \u0928\u093f\u0926\u093e\u0928 \u0928\u0939\u0940\u0902\u0964",
+    secRenal:"\u0917\u0941\u0930\u094d\u0926\u093e",
+    crcl:"\u0915\u094d\u0930\u093f\u090f\u091f\u093f\u0928\u093f\u0928 \u0915\u094d\u0932\u0940\u092f\u0930\u0947\u0902\u0938 (mL/min)",
+    crclNote:"\u0915\u0949\u0915\u094d\u0930\u0949\u092b\u094d\u091f\u2013\u0917\u0949\u0932\u094d\u091f, 18 \u0935\u0930\u094d\u0937 \u0938\u0947 \u0905\u0927\u093f\u0915 \u0935\u092f\u0938\u094d\u0915\u094b\u0902 \u0915\u0947 \u0932\u093f\u090f\u0964 \u0938\u094d\u0925\u093f\u0930-\u0905\u0935\u0938\u094d\u0925\u093e \u0938\u0940\u0930\u092e \u0915\u094d\u0930\u093f\u090f\u091f\u093f\u0928\u093f\u0928 \u091a\u093e\u0939\u093f\u090f; \u0905\u0938\u094d\u0925\u093f\u0930 \u0917\u0941\u0930\u094d\u0926\u093e \u0915\u093e\u0930\u094d\u092f, \u0917\u0930\u094d\u092d\u093e\u0935\u0938\u094d\u0925\u093e \u092f\u093e \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0936\u0930\u0940\u0930-\u0906\u0915\u093e\u0930 \u092e\u0947\u0902 \u092e\u093e\u0928\u094d\u092f \u0928\u0939\u0940\u0902\u0964",
+    creat:"\u0938\u0940\u0930\u092e \u0915\u094d\u0930\u093f\u090f\u091f\u093f\u0928\u093f\u0928 (mg/dL, \u0935\u0948\u0915\u0932\u094d\u092a\u093f\u0915)",
+    creatHint:"\u0915\u094d\u0930\u093f\u090f\u091f\u093f\u0928\u093f\u0928 \u0915\u094d\u0932\u0940\u092f\u0930\u0947\u0902\u0938 (\u0915\u0949\u0915\u094d\u0930\u0949\u092b\u094d\u091f\u2013\u0917\u0949\u0932\u094d\u091f) \u0915\u0947 \u0932\u093f\u090f\u0964 \u0916\u093e\u0932\u0940 \u091b\u094b\u0921\u093c\u0928\u0947 \u092a\u0930 \u0917\u0923\u0928\u093e \u0928\u0939\u0940\u0902 \u0939\u094b\u0917\u0940\u0964",
     title:"\u0915\u094d\u0932\u093f\u0928\u093f\u0915\u0932 \u0938\u094d\u0935\u093e\u0938\u094d\u0925\u094d\u092f \u0915\u0948\u0932\u0915\u0941\u0932\u0947\u091f\u0930", subtitle:"BMI \u00b7 BMR \u00b7 TDEE \u00b7 \u092e\u0948\u0915\u094d\u0930\u094b\u0938 \u00b7 \u0924\u0930\u0932 \u00b7 \u0936\u0930\u0940\u0930 \u0938\u0902\u0930\u091a\u0928\u093e",
     author:"\u0921\u0949. \u0938\u094b\u0939\u093f\u0932 \u092e\u094b\u092e\u093f\u0928, BHMS \u0926\u094d\u0935\u093e\u0930\u093e \u0935\u093f\u0915\u0938\u093f\u0924",
     disclaimer:"\u092f\u0939 \u0915\u0947\u0935\u0932 \u0928\u093f\u0930\u094d\u0923\u092f-\u0938\u0939\u093e\u092f\u0915 \u0909\u092a\u0915\u0930\u0923 \u0939\u0948\u0964 \u092a\u0930\u093f\u0923\u093e\u092e \u091c\u0928\u0938\u0902\u0916\u094d\u092f\u093e-\u0906\u0927\u093e\u0930\u093f\u0924 \u0905\u0928\u0941\u092e\u093e\u0928 \u0939\u0948\u0902, \u0928\u093f\u0926\u093e\u0928 \u0928\u0939\u0940\u0902\u0964 \u0915\u0943\u092a\u092f\u093e \u0928\u0948\u0926\u093e\u0928\u093f\u0915 \u0928\u093f\u0930\u094d\u0923\u092f \u0915\u093e \u092a\u094d\u0930\u092f\u094b\u0917 \u0915\u0930\u0947\u0902\u0964",
@@ -553,6 +587,13 @@ var I18N = {
     trend:"\u092a\u0939\u0932\u0940 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f \u0938\u0947 \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928", unitCm:"cm", unitKg:"kg"
   },
   gu: {
+    workingTitle:"\u0a97\u0aa3\u0aa4\u0ab0\u0ac0 \u0a9c\u0ac1\u0a93",
+    workingNote:"\u0aa6\u0ab0\u0ac7\u0a95 \u0aaa\u0ab0\u0abf\u0aa3\u0abe\u0aae, \u0ab8\u0ac2\u0aa4\u0acd\u0ab0 \u0a85\u0aa8\u0ac7 \u0aa4\u0aae\u0abe\u0ab0\u0abe \u0aae\u0ac2\u0ab2\u0acd\u0aaf\u0acb \u0ab8\u0abe\u0aa5\u0ac7 \u2014 \u0a9c\u0ac7\u0aa5\u0ac0 \u0aa4\u0aae\u0ac7 \u0a9a\u0a95\u0abe\u0ab8\u0ac0 \u0ab6\u0a95\u0acb, \u0aab\u0a95\u0acd\u0aa4 \u0aad\u0ab0\u0acb\u0ab8\u0acb \u0aa8 \u0a95\u0ab0\u0acb. \u0a86 \u0ab5\u0ab8\u0acd\u0aa4\u0ac0-\u0a86\u0aa7\u0abe\u0ab0\u0abf\u0aa4 \u0a85\u0a82\u0aa6\u0abe\u0a9c \u0a9b\u0ac7, \u0aa8\u0abf\u0aa6\u0abe\u0aa8 \u0aa8\u0aa5\u0ac0.",
+    secRenal:"\u0a95\u0abf\u0aa1\u0aa8\u0ac0",
+    crcl:"\u0a95\u0acd\u0ab0\u0abf\u0a8f\u0a9f\u0abf\u0aa8\u0abf\u0aa8 \u0a95\u0acd\u0ab2\u0abf\u0aaf\u0ab0\u0aa8\u0acd\u0ab8 (mL/min)",
+    crclNote:"\u0a95\u0acb\u0a95\u0acd\u0ab0\u0acb\u0aab\u0acd\u0a9f\u2013\u0a97\u0acb\u0ab2\u0acd\u0a9f, 18 \u0ab5\u0ab0\u0acd\u0ab7\u0aa5\u0ac0 \u0ab5\u0aa7\u0ac1 \u0a89\u0a82\u0aae\u0ab0\u0aa8\u0abe \u0aaa\u0ac1\u0a96\u0acd\u0aa4\u0acb \u0aae\u0abe\u0a9f\u0ac7. \u0ab8\u0acd\u0aa5\u0abf\u0ab0-\u0ab8\u0acd\u0aa5\u0abf\u0aa4\u0abf \u0ab8\u0ac0\u0ab0\u0aae \u0a95\u0acd\u0ab0\u0abf\u0a8f\u0a9f\u0abf\u0aa8\u0abf\u0aa8 \u0a9c\u0ab0\u0ac2\u0ab0\u0ac0; \u0a85\u0ab8\u0acd\u0aa5\u0abf\u0ab0 \u0a95\u0abf\u0aa1\u0aa8\u0ac0 \u0a95\u0abe\u0ab0\u0acd\u0aaf, \u0a97\u0ab0\u0acd\u0aad\u0abe\u0ab5\u0ab8\u0acd\u0aa5\u0abe \u0a95\u0ac7 \u0a85\u0aa4\u0abf \u0ab6\u0ab0\u0ac0\u0ab0-\u0a95\u0aa6\u0aae\u0abe\u0a82 \u0aae\u0abe\u0aa8\u0acd\u0aaf \u0aa8\u0aa5\u0ac0.",
+    creat:"\u0ab8\u0ac0\u0ab0\u0aae \u0a95\u0acd\u0ab0\u0abf\u0a8f\u0a9f\u0abf\u0aa8\u0abf\u0aa8 (mg/dL, \u0ab5\u0ac8\u0a95\u0ab2\u0acd\u0aaa\u0abf\u0a95)",
+    creatHint:"\u0a95\u0acd\u0ab0\u0abf\u0a8f\u0a9f\u0abf\u0aa8\u0abf\u0aa8 \u0a95\u0acd\u0ab2\u0abf\u0aaf\u0ab0\u0aa8\u0acd\u0ab8 (\u0a95\u0acb\u0a95\u0acd\u0ab0\u0acb\u0aab\u0acd\u0a9f\u2013\u0a97\u0acb\u0ab2\u0acd\u0a9f) \u0aae\u0abe\u0a9f\u0ac7. \u0a96\u0abe\u0ab2\u0ac0 \u0a9b\u0acb\u0aa1\u0acb \u0aa4\u0acb \u0a97\u0aa3\u0aa4\u0ab0\u0ac0 \u0aa8\u0ab9\u0ac0\u0a82 \u0aa5\u0abe\u0aaf.",
     title:"\u0a95\u0acd\u0ab2\u0abf\u0aa8\u0abf\u0a95\u0ab2 \u0a86\u0ab0\u0acb\u0a97\u0acd\u0aaf \u0a95\u0ac7\u0ab2\u0acd\u0a95\u0acd\u0aaf\u0ac1\u0ab2\u0ac7\u0a9f\u0ab0", subtitle:"BMI \u00b7 BMR \u00b7 TDEE \u00b7 \u0aae\u0ac7\u0a95\u0acd\u0ab0\u0acb\u0ab8 \u00b7 \u0aaa\u0acd\u0ab0\u0ab5\u0abe\u0ab9\u0ac0 \u00b7 \u0ab6\u0ab0\u0ac0\u0ab0 \u0ab0\u0a9a\u0aa8\u0abe",
     author:"\u0aa1\u0ac9. \u0ab8\u0acb\u0ab9\u0abf\u0ab2 \u0aae\u0acb\u0aae\u0abf\u0aa8, BHMS \u0aa6\u0acd\u0ab5\u0abe\u0ab0\u0abe \u0ab5\u0abf\u0a95\u0ab8\u0abf\u0aa4",
     disclaimer:"\u0a86 \u0aab\u0a95\u0acd\u0aa4 \u0aa8\u0abf\u0ab0\u0acd\u0aa3\u0aaf-\u0ab8\u0ab9\u0abe\u0aaf\u0a95 \u0ab8\u0abe\u0aa7\u0aa8 \u0a9b\u0ac7. \u0aaa\u0ab0\u0abf\u0aa3\u0abe\u0aae \u0a85\u0a82\u0aa6\u0abe\u0a9c\u0abe \u0a9b\u0ac7, \u0aa8\u0abf\u0aa6\u0abe\u0aa8 \u0aa8\u0aa5\u0ac0. \u0a95\u0ac3\u0aaa\u0abe \u0aa4\u0aae\u0abe\u0ab0\u0abe \u0aa4\u0aac\u0ac0\u0aac\u0aa8\u0acb \u0a89\u0aaa\u0aaf\u0acb\u0a97 \u0a95\u0ab0\u0acb.",
@@ -615,7 +656,7 @@ var state = { gender:"M", heightUnit:"cm", weightUnit:"kg", proteinBasis:"total"
 /* ---------------- element refs ---------------- */
 var el = {};
 ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise","fever","breastfeeding","renal","heart","athlete",
- "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid",
+ "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","creat","rCrcl","working",
  "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput"].forEach(function(id){ el[id]=$(id); });
 
 el.ver.textContent = VERSION;
@@ -782,9 +823,10 @@ function calculate(){
   var valid = age > 0 && heightCm > 0 && weightKg > 0;
 
   if(!valid){
-    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
+    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","rCrcl"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
     el.gauge.innerHTML = ""; el.gaugeScale.textContent = "";
     renderCaution([]);
+    if(el.working) el.working.innerHTML = "";
     return null;
   }
 
@@ -845,11 +887,32 @@ function calculate(){
   el.rMacroPct.textContent = Math.round(protein*4/tdee*100) + "/" + Math.round(fat*9/tdee*100) + "/" + Math.round(carbs*4/tdee*100);
   el.rFluid.textContent = r0(fluid) + " mL (" + fluidL.toFixed(2) + " L / " + Math.round(fluid/250) + " " + t("glasses") + ")";
 
+  // Creatinine clearance (Cockcroft-Gault) - needs a serum creatinine
+  var creat = num(el.creat.value);
+  var crcl = 0;
+  if(creat > 0 && age >= 18){
+    crcl = ((140 - age) * weightKg * (state.gender === "F" ? 0.85 : 1)) / (72 * creat);
+  }
+  el.rCrcl.textContent = crcl > 0 ? r1(crcl) : "--";
+
+  // Show the working - every result, with its formula and the values substituted
+  renderWorking({
+    age: age, gender: state.gender, heightCm: heightCm, weightKg: weightKg, hM: heightM,
+    mult: a.mult, prot: a.prot, bmi: bmi, bmr: bmr, tdee: tdee, ibw: ibw, abw: abw,
+    proteinWt: proteinWt, protein: protein, fatRatio: fatRatio, fat: fat, carbs: carbs,
+    fiber: fiber, fluid: fluid, bsa: bsa, bf: bf, lbm: lbm, waistCm: waistCm, whtr: whtr,
+    hipCm: hipCm, whr: whr, nLo: nrange[0], nHi: nrange[1], idealLo: idealLo, idealHi: idealHi,
+    clim: (CLIMATE[el.climate.value] || 1), exMl: (EXERCISE_ML[el.exercise.value] || 0),
+    feverMl: el.fever.checked ? FEVER_ML : 0, bfMl: el.breastfeeding.checked ? BF_ML : 0,
+    creat: creat, crcl: crcl
+  });
+
   var cautions = [];
   if(age < 18) cautions.push(t("adultWarn"));
   if(el.renal.checked) cautions.push(t("renalWarn"));
   if(el.heart.checked) cautions.push(t("heartWarn"));
   if(el.athlete.checked) cautions.push(t("athleteWarn"));
+  if(creat > 0 && age < 18) cautions.push(t("crclNote"));
   if(bmi > 70) cautions.push(t("bmiHigh"));
   renderCaution(cautions);
 
@@ -859,11 +922,51 @@ function calculate(){
     activity: activityKey, bmi: r1(bmi), bmiCat: t(cat.key),
     bmr: r0(bmr), tdee: r0(tdee), protein: r1(protein), fat: r1(fat), carbs: r1(carbs), fiber: r1(fiber),
     fluidMl: r0(fluid), ibw: r1(ibw), abw: r1(abw), bsa: bsa.toFixed(2), bf: r1(bf), lbm: r1(lbm),
+    crcl: crcl > 0 ? r1(crcl) : "",
     whtr: whtr > 0 ? whtr.toFixed(2) : "", hipCm: hipCm > 0 ? r1(hipCm) : "", whr: whr > 0 ? whr.toFixed(2) : "",
     idealLo: r1(idealLo), idealHi: r1(idealHi), target: r1(targetWt), kgToGo: r1(kgToGo),
     proteinMeal: r1(protein/3), macroPct: Math.round(protein*4/tdee*100) + "/" + Math.round(fat*9/tdee*100) + "/" + Math.round(carbs*4/tdee*100)
   };
 }
+/* ---------------- show the working ---------------- */
+/* Every result, with its formula and the values substituted, so the number can
+   be checked rather than trusted. Labels are the clinical abbreviations the app
+   already uses untranslated (BMI, BMR, TDEE, BSA, IBW, CrCl). */
+function buildWorking(v){
+  var L = [], M = v.gender === "M";
+  function add(n, r, f, sub){ L.push({n:n, r:r, f:f, s:sub}); }
+  add("BMI", r1(v.bmi), "weight \u00f7 height\u00b2", r1(v.weightKg) + " \u00f7 " + v.hM.toFixed(2) + "\u00b2");
+  add("BMR", r0(v.bmr), "10\u00d7wt + 6.25\u00d7ht \u2212 5\u00d7age " + (M ? "+ 5" : "\u2212 161"),
+      "10\u00d7" + r1(v.weightKg) + " + 6.25\u00d7" + r1(v.heightCm) + " \u2212 5\u00d7" + v.age + " " + (M ? "+ 5" : "\u2212 161"));
+  add("TDEE", r0(v.tdee), "BMR \u00d7 activity", r0(v.bmr) + " \u00d7 " + v.mult);
+  add("Body fat", r1(v.bf) + "%", "1.20\u00d7BMI + 0.23\u00d7age \u2212 10.8\u00d7sex \u2212 5.4",
+      "1.20\u00d7" + r1(v.bmi) + " + 0.23\u00d7" + v.age + " \u2212 10.8\u00d7" + (M ? 1 : 0) + " \u2212 5.4");
+  add("Lean mass", r1(v.lbm), "weight \u00d7 (1 \u2212 body-fat/100)", r1(v.weightKg) + " \u00d7 (1 \u2212 " + r1(v.bf) + "/100)");
+  add("BSA", v.bsa.toFixed(2), "\u221a(height \u00d7 weight \u00f7 3600)", "\u221a(" + r1(v.heightCm) + " \u00d7 " + r1(v.weightKg) + " \u00f7 3600)");
+  add("Ideal wt", r1(v.ibw), "base + 2.3 \u00d7 (height_in \u2212 60)", (M ? 50 : 45.5) + " + 2.3 \u00d7 (" + (v.heightCm/2.54).toFixed(1) + " \u2212 60)");
+  add("Adjusted wt", r1(v.abw), "IBW + 0.25 \u00d7 (weight \u2212 IBW)", r1(v.ibw) + " + 0.25 \u00d7 (" + r1(v.weightKg) + " \u2212 " + r1(v.ibw) + ")");
+  add("Ideal range", r1(v.idealLo) + "\u2013" + r1(v.idealHi), "normal BMI \u00d7 height\u00b2", r1(v.nLo) + "\u00d7" + v.hM.toFixed(2) + "\u00b2 \u2013 " + r1(v.nHi) + "\u00d7" + v.hM.toFixed(2) + "\u00b2");
+  add("Protein", r1(v.protein), "g/kg \u00d7 basis weight", v.prot + " \u00d7 " + r1(v.proteinWt));
+  add("Fat", r1(v.fat), "fat ratio \u00d7 TDEE \u00f7 9", v.fatRatio + " \u00d7 " + r0(v.tdee) + " \u00f7 9");
+  add("Carbs", r1(v.carbs), "(TDEE \u2212 protein\u00d74 \u2212 fat\u00d79) \u00f7 4", "(" + r0(v.tdee) + " \u2212 " + r1(v.protein) + "\u00d74 \u2212 " + r1(v.fat) + "\u00d79) \u00f7 4");
+  add("Fiber", r1(v.fiber), "14 \u00d7 TDEE \u00f7 1000", "14 \u00d7 " + r0(v.tdee) + " \u00f7 1000");
+  add("Fluid", r0(v.fluid) + " mL", "30\u00d7wt\u00d7climate + exercise + flags",
+      "30\u00d7" + r1(v.weightKg) + "\u00d7" + v.clim + (v.exMl ? " + " + v.exMl : "") + (v.feverMl ? " + " + v.feverMl : "") + (v.bfMl ? " + " + v.bfMl : ""));
+  if(v.whtr > 0) add("Waist/height", v.whtr.toFixed(2), "waist \u00f7 height", r1(v.waistCm) + " \u00f7 " + r1(v.heightCm));
+  if(v.whr > 0) add("Waist/hip", v.whr.toFixed(2), "waist \u00f7 hip", r1(v.waistCm) + " \u00f7 " + r1(v.hipCm));
+  if(v.crcl > 0) add("CrCl", r1(v.crcl) + " mL/min", "((140 \u2212 age) \u00d7 wt \u00d7 F) \u00f7 (72 \u00d7 Scr)",
+      "((140 \u2212 " + v.age + ") \u00d7 " + r1(v.weightKg) + " \u00d7 " + (M ? 1 : 0.85) + ") \u00f7 (72 \u00d7 " + v.creat + ")");
+  return L;
+}
+function renderWorking(v){
+  var box = el.working; if(!box) return;
+  var rows = buildWorking(v), h = '<ul>';
+  for(var i=0;i<rows.length;i++){
+    h += '<li><b>' + rows[i].n + ' = ' + rows[i].r + '</b><span>' + rows[i].f + ' = ' + rows[i].s + '</span></li>';
+  }
+  box.innerHTML = h + '</ul><p class="wk-note">' + t("workingNote") + '</p>';
+}
+
 function renderCaution(list){
   if(!list.length){ el.caution.classList.remove("show"); el.caution.textContent = ""; return; }
   el.caution.classList.add("show");
@@ -1002,7 +1105,7 @@ function deleteEntry(idx){
 }
 
 function resetForm(){
-  ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip"].forEach(function(id){ if(el[id]) el[id].value=""; });
+  ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","creat"].forEach(function(id){ if(el[id]) el[id].value=""; });
   el.activity.value = "sedentary";
   el.fatRatio.value = "balanced";
   el.climate.value = "temperate";
@@ -1117,7 +1220,7 @@ function applyTheme(theme){
 }
 
 /* ---------------- wiring ---------------- */
-["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise"].forEach(function(id){
+["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","creat","activity","fatRatio","climate","exercise"].forEach(function(id){
   el[id].addEventListener("input", calculate);
   el[id].addEventListener("change", calculate);
 });
@@ -1205,6 +1308,12 @@ window.__chcSelfTest = function(){
   ok("WHR 88/100 = 0.88", Math.abs(88/100 - 0.88) < 1e-9);
   ok("Indian normal upper = 22.9", normalRange("indian")[1] === 22.9);
   ok("WHO normal upper = 24.9", normalRange("who")[1] === 24.9);
+  // CrCl (Cockcroft-Gault): male 70kg 40y Scr 1.0 -> 97.2 mL/min
+  ok("CrCl male 70kg/40y/Scr1.0 = 97.2", Math.abs(((140-40)*70)/(72*1.0) - 97.2) < 0.6);
+  ok("CrCl female 70kg/40y/Scr1.0 = 82.6", Math.abs(((140-40)*70*0.85)/(72*1.0) - 82.6) < 0.6);
+  // units consistency: the same height in cm and in m gives the same BMI
+  ok("units: BMI from cm == BMI from m", Math.abs((70/(1.75*1.75)) - (70/((175/100)*(175/100)))) < 1e-12);
+  ok("units: 1 kg == 2.20462 lb", Math.abs(1*2.20462 - 2.20462) < 1e-9);
   var fails = results.filter(function(r){ return r.indexOf("FAIL")===0; }).length;
   console.log(results.join("\n"));
   console.log(fails ? fails + " FAILED" : "All self-tests passed");

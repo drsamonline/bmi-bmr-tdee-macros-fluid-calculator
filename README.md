@@ -41,6 +41,7 @@ The original calculator, its clinical design and the choice of formulas are his 
 | **Energy** | BMR (Mifflin–St Jeor), TDEE (activity multipliers), calorie targets (maintain / lose / gain) and projected weekly weight change |
 | **Macros** | Protein, fat, carbohydrate and fiber; protein per meal; macro split (% of calories) |
 | **Fluids** | Daily fluid requirement (30 mL/kg baseline, adjusted for climate, exercise, fever and breastfeeding), shown in mL / L / glasses |
+| **Renal** | Creatinine clearance (Cockcroft&ndash;Gault) from a serum creatinine, with its formula and limits |
 | **Risk & flags** | Indian/Asia-Pacific **and** WHO BMI cut-offs; cautions for renal/hepatic disease, heart failure, athletes and paediatric patients |
 
 ## Features
@@ -54,6 +55,7 @@ The original calculator, its clinical design and the choice of formulas are his 
 - **Trilingual UI** — English, हिन्दी and ગુજરાતી.
 - **Light / dark theme**, respecting the system preference.
 - **Accessible** — ARIA radiogroups, live result region, keyboard navigation, focus-visible states, hover definitions on every metric, a "What these mean" panel, and a print stylesheet.
+- **Show the working** — every result lists its formula with your values substituted, in a "Show the working" panel, so it can be checked rather than trusted.
 - **Fully offline** — self-contained, no external requests; add to home screen on mobile.
 
 ## Usage
@@ -73,6 +75,11 @@ The original calculator, its clinical design and the choice of formulas are his 
 To rebuild after editing the source, minify `src/clinical-health-calculator.html` into `index.html` with any HTML minifier.
 
 ## Changelog
+
+**v2.2.0**
+- **Show the working** — a panel that lists every result with its formula and the values substituted, so a number can be checked rather than trusted.
+- New: **creatinine clearance** (Cockcroft–Gault) from an optional serum creatinine, with its formula, units and limits.
+- Self-tests extended: known-value checks for creatinine clearance plus a units-consistency check (BMI from cm equals BMI from m).
 
 **v2.1.0**
 - Responsive desktop/tablet layout (two-column, sticky results, three-across tiles).
@@ -97,6 +104,23 @@ To rebuild after editing the source, minify `src/clinical-health-calculator.html
 - **BSA** — Mosteller RD. *N Engl J Med* 1987;317:1098.
 - **Body fat** — Deurenberg P, et al. *Br J Nutr* 1991;65:105–14.
 - **Waist** — IDF / WHO Asia-Pacific cut-offs (men >90 cm, women >80 cm); waist-to-hip >0.90 (men) / >0.85 (women).
+- **Creatinine clearance** — Cockcroft DW, Gault MH. *Nephron* 1976;16:31–41. Adults 18+; needs steady-state renal function and a steady-state serum creatinine; not valid in pregnancy or at extremes of body size.
+- **Show the working** — each result is rendered with its formula and the substituted values; the arithmetic is the app's own, not a lookup.
+
+## Tests
+
+The app carries its own known-value self-tests — one per calculator, plus a
+units-consistency check. Open `index.html?selftest=1` and read the console, or run
+them headlessly:
+
+```
+npm install
+npm test
+```
+
+`test/selftest.js` loads the built `index.html` in a headless DOM, runs the
+self-tests, and drives the calculator (creatinine clearance, the "Show the
+working" panel). `.github/workflows/test.yml` runs it on every push.
 
 ## Disclaimer
 
