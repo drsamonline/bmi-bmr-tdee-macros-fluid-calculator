@@ -372,6 +372,16 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
           <input type="number" id="creat" placeholder="e.g. 1.0" step="0.01" min="0.1" max="20" inputmode="decimal">
           <div class="hint" data-i18n="creatHint">Used for creatinine clearance (Cockcroft-Gault). Leave blank to skip.</div>
         </div>
+        <div class="field">
+          <label for="doseKg" data-i18n="doseKg">Dose (mg/kg, optional)</label>
+          <input type="number" id="doseKg" placeholder="e.g. 5" step="0.01" min="0" inputmode="decimal">
+          <div class="hint" data-i18n="doseKgHint">Weight-based dose = rate &times; weight (actual weight).</div>
+        </div>
+        <div class="field">
+          <label for="doseM2" data-i18n="doseM2">Dose (mg/m&sup2;, optional)</label>
+          <input type="number" id="doseM2" placeholder="e.g. 100" step="0.01" min="0" inputmode="decimal">
+          <div class="hint" data-i18n="doseM2Hint">Surface-area dose = rate &times; BSA (Mosteller).</div>
+        </div>
       </details>
     </section>
 
@@ -421,6 +431,10 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
 
         <div class="section-title" data-i18n="secRenal">Renal</div>
         <div class="stat wide"><div class="val" id="rCrcl">--</div><div class="lbl" title="Creatinine clearance (Cockcroft-Gault) from age, weight and serum creatinine." data-i18n="crcl">Creatinine clearance (mL/min)</div></div>
+
+        <div class="section-title" data-i18n="secDosing">Dosing</div>
+        <div class="stat"><div class="val" id="rDoseKg">--</div><div class="lbl" data-i18n="doseKgOut">Weight-based dose (mg)</div></div>
+        <div class="stat"><div class="val" id="rDoseM2">--</div><div class="lbl" data-i18n="doseM2Out">BSA-based dose (mg)</div></div>
       </div>
       <details class="defs working">
         <summary data-i18n="workingTitle">Show the working</summary>
@@ -506,6 +520,14 @@ var $ = function(id){ return document.getElementById(id); };
 /* ---------------- i18n ---------------- */
 var I18N = {
   en: {
+    secDosing:"Dosing",
+    doseKg:"Dose (mg/kg, optional)",
+    doseKgHint:"Weight-based dose = rate \u00d7 weight (actual weight).",
+    doseM2:"Dose (mg/m\u00b2, optional)",
+    doseM2Hint:"Surface-area dose = rate \u00d7 BSA (Mosteller).",
+    doseKgOut:"Weight-based dose (mg)",
+    doseM2Out:"BSA-based dose (mg)",
+    doseNote:"Dose = rate \u00d7 size. This is arithmetic, not a prescribing decision \u2014 check the product's own dosing and the patient.",
     workingTitle:"Show the working",
     workingNote:"Every result, with the formula and your values substituted \u2014 so you can check it rather than trust it. Population estimates, not a diagnosis.",
     secRenal:"Renal",
@@ -548,6 +570,14 @@ var I18N = {
     trend:"Change since first entry", unitCm:"cm", unitKg:"kg"
   },
   hi: {
+    secDosing:"\u0916\u0941\u0930\u093e\u0915",
+    doseKg:"\u0916\u0941\u0930\u093e\u0915 (mg/kg, \u0935\u0948\u0915\u0932\u094d\u092a\u093f\u0915)",
+    doseKgHint:"\u0935\u091c\u093c\u0928-\u0906\u0927\u093e\u0930\u093f\u0924 \u0916\u0941\u0930\u093e\u0915 = \u0926\u0930 \u00d7 \u0935\u091c\u093c\u0928 (\u0935\u093e\u0938\u094d\u0924\u0935\u093f\u0915 \u0935\u091c\u093c\u0928)\u0964",
+    doseM2:"\u0916\u0941\u0930\u093e\u0915 (mg/m\u00b2, \u0935\u0948\u0915\u0932\u094d\u092a\u093f\u0915)",
+    doseM2Hint:"\u092a\u0943\u0937\u094d\u0920\u0940\u092f-\u0915\u094d\u0937\u0947\u0924\u094d\u0930 \u0916\u0941\u0930\u093e\u0915 = \u0926\u0930 \u00d7 BSA (\u092e\u094b\u0938\u094d\u091f\u0947\u0932\u0930)\u0964",
+    doseKgOut:"\u0935\u091c\u093c\u0928-\u0906\u0927\u093e\u0930\u093f\u0924 \u0916\u0941\u0930\u093e\u0915 (mg)",
+    doseM2Out:"BSA-\u0906\u0927\u093e\u0930\u093f\u0924 \u0916\u0941\u0930\u093e\u0915 (mg)",
+    doseNote:"\u0916\u0941\u0930\u093e\u0915 = \u0926\u0930 \u00d7 \u0906\u0915\u093e\u0930\u0964 \u092f\u0939 \u0915\u0947\u0935\u0932 \u0917\u0923\u0928\u093e \u0939\u0948, \u0915\u094b\u0908 \u092a\u094d\u0930\u093f\u0938\u094d\u0915\u094d\u0930\u093f\u092a\u094d\u0936\u0928 \u0928\u093f\u0930\u094d\u0923\u092f \u0928\u0939\u0940\u0902 \u2014 \u0909\u0924\u094d\u092a\u093e\u0926 \u0915\u0940 \u0905\u092a\u0928\u0940 \u0916\u0941\u0930\u093e\u0915 \u0914\u0930 \u0930\u094b\u0917\u0940 \u0915\u0940 \u091c\u093e\u0901\u091a \u0915\u0930\u0947\u0902\u0964",
     workingTitle:"\u0917\u0923\u0928\u093e \u0926\u0947\u0916\u0947\u0902",
     workingNote:"\u0939\u0930 \u092a\u0930\u093f\u0923\u093e\u092e, \u0938\u0942\u0924\u094d\u0930 \u0914\u0930 \u0906\u092a\u0915\u0947 \u092e\u093e\u0928\u094b\u0902 \u0915\u0947 \u0938\u093e\u0925 \u2014 \u0924\u093e\u0915\u093f \u0906\u092a \u091c\u093e\u0901\u091a \u0938\u0915\u0947\u0902, \u0915\u0947\u0935\u0932 \u092d\u0930\u094b\u0938\u093e \u0928 \u0915\u0930\u0947\u0902\u0964 \u092f\u0947 \u091c\u0928\u0938\u0902\u0916\u094d\u092f\u093e-\u0906\u0927\u093e\u0930\u093f\u0924 \u0905\u0928\u0941\u092e\u093e\u0928 \u0939\u0948\u0902, \u0928\u093f\u0926\u093e\u0928 \u0928\u0939\u0940\u0902\u0964",
     secRenal:"\u0917\u0941\u0930\u094d\u0926\u093e",
@@ -587,6 +617,14 @@ var I18N = {
     trend:"\u092a\u0939\u0932\u0940 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f \u0938\u0947 \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928", unitCm:"cm", unitKg:"kg"
   },
   gu: {
+    secDosing:"\u0aa1\u0acb\u0a9d",
+    doseKg:"\u0aa1\u0acb\u0a9d (mg/kg, \u0ab5\u0ac8\u0a95\u0ab2\u0acd\u0aaa\u0abf\u0a95)",
+    doseKgHint:"\u0ab5\u0a9c\u0aa8-\u0a86\u0aa7\u0abe\u0ab0\u0abf\u0aa4 \u0aa1\u0acb\u0a9d = \u0aa6\u0ab0 \u00d7 \u0ab5\u0a9c\u0aa8 (\u0ab5\u0abe\u0ab8\u0acd\u0aa4\u0ab5\u0abf\u0a95 \u0ab5\u0a9c\u0aa8).",
+    doseM2:"\u0aa1\u0acb\u0a9d (mg/m\u00b2, \u0ab5\u0ac8\u0a95\u0ab2\u0acd\u0aaa\u0abf\u0a95)",
+    doseM2Hint:"\u0ab8\u0aaa\u0abe\u0a9f\u0ac0-\u0a95\u0acd\u0ab7\u0ac7\u0aa4\u0acd\u0ab0 \u0aa1\u0acb\u0a9d = \u0aa6\u0ab0 \u00d7 BSA (\u0aae\u0acb\u0ab8\u0acd\u0a9f\u0ac7\u0ab2\u0ab0).",
+    doseKgOut:"\u0ab5\u0a9c\u0aa8-\u0a86\u0aa7\u0abe\u0ab0\u0abf\u0aa4 \u0aa1\u0acb\u0a9d (mg)",
+    doseM2Out:"BSA-\u0a86\u0aa7\u0abe\u0ab0\u0abf\u0aa4 \u0aa1\u0acb\u0a9d (mg)",
+    doseNote:"\u0aa1\u0acb\u0a9d = \u0aa6\u0ab0 \u00d7 \u0a86\u0a95\u0abe\u0ab0. \u0a86 \u0aab\u0a95\u0acd\u0aa4 \u0a97\u0aa3\u0aa4\u0ab0\u0ac0 \u0a9b\u0ac7, \u0aaa\u0acd\u0ab0\u0abf\u0ab8\u0acd\u0a95\u0acd\u0ab0\u0abf\u0aaa\u0acd\u0ab6\u0aa8 \u0aa8\u0abf\u0ab0\u0acd\u0aa3\u0aaf \u0aa8\u0aa5\u0ac0 \u2014 \u0a89\u0aa4\u0acd\u0aaa\u0abe\u0aa6\u0aa8\u0aa8\u0acb \u0aaa\u0acb\u0aa4\u0abe\u0aa8\u0acb \u0aa1\u0acb\u0a9d \u0a85\u0aa8\u0ac7 \u0aa6\u0ab0\u0acd\u0aa6\u0ac0 \u0aa4\u0aaa\u0abe\u0ab8\u0acb.",
     workingTitle:"\u0a97\u0aa3\u0aa4\u0ab0\u0ac0 \u0a9c\u0ac1\u0a93",
     workingNote:"\u0aa6\u0ab0\u0ac7\u0a95 \u0aaa\u0ab0\u0abf\u0aa3\u0abe\u0aae, \u0ab8\u0ac2\u0aa4\u0acd\u0ab0 \u0a85\u0aa8\u0ac7 \u0aa4\u0aae\u0abe\u0ab0\u0abe \u0aae\u0ac2\u0ab2\u0acd\u0aaf\u0acb \u0ab8\u0abe\u0aa5\u0ac7 \u2014 \u0a9c\u0ac7\u0aa5\u0ac0 \u0aa4\u0aae\u0ac7 \u0a9a\u0a95\u0abe\u0ab8\u0ac0 \u0ab6\u0a95\u0acb, \u0aab\u0a95\u0acd\u0aa4 \u0aad\u0ab0\u0acb\u0ab8\u0acb \u0aa8 \u0a95\u0ab0\u0acb. \u0a86 \u0ab5\u0ab8\u0acd\u0aa4\u0ac0-\u0a86\u0aa7\u0abe\u0ab0\u0abf\u0aa4 \u0a85\u0a82\u0aa6\u0abe\u0a9c \u0a9b\u0ac7, \u0aa8\u0abf\u0aa6\u0abe\u0aa8 \u0aa8\u0aa5\u0ac0.",
     secRenal:"\u0a95\u0abf\u0aa1\u0aa8\u0ac0",
@@ -656,7 +694,7 @@ var state = { gender:"M", heightUnit:"cm", weightUnit:"kg", proteinBasis:"total"
 /* ---------------- element refs ---------------- */
 var el = {};
 ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise","fever","breastfeeding","renal","heart","athlete",
- "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","creat","rCrcl","working",
+ "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","creat","rCrcl","doseKg","doseM2","rDoseKg","rDoseM2","working",
  "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput"].forEach(function(id){ el[id]=$(id); });
 
 el.ver.textContent = VERSION;
@@ -823,7 +861,7 @@ function calculate(){
   var valid = age > 0 && heightCm > 0 && weightKg > 0;
 
   if(!valid){
-    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","rCrcl"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
+    ["rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","rCrcl","rDoseKg","rDoseM2"].forEach(function(id){ el[id].textContent = id==="rBmiCat" ? "" : "--"; });
     el.gauge.innerHTML = ""; el.gaugeScale.textContent = "";
     renderCaution([]);
     if(el.working) el.working.innerHTML = "";
@@ -895,6 +933,14 @@ function calculate(){
   }
   el.rCrcl.textContent = crcl > 0 ? r1(crcl) : "--";
 
+  // Dosing: rate x size, with the unit shown at every step (weight-based and BSA-based)
+  var doseKg = num(el.doseKg.value);
+  var doseM2 = num(el.doseM2.value);
+  var doseByKg = doseKg > 0 ? doseKg * weightKg : 0;
+  var doseByM2 = doseM2 > 0 ? doseM2 * bsa : 0;
+  el.rDoseKg.textContent = doseByKg > 0 ? r1(doseByKg) : "--";
+  el.rDoseM2.textContent = doseByM2 > 0 ? r1(doseByM2) : "--";
+
   // Show the working - every result, with its formula and the values substituted
   renderWorking({
     age: age, gender: state.gender, heightCm: heightCm, weightKg: weightKg, hM: heightM,
@@ -904,7 +950,7 @@ function calculate(){
     hipCm: hipCm, whr: whr, nLo: nrange[0], nHi: nrange[1], idealLo: idealLo, idealHi: idealHi,
     clim: (CLIMATE[el.climate.value] || 1), exMl: (EXERCISE_ML[el.exercise.value] || 0),
     feverMl: el.fever.checked ? FEVER_ML : 0, bfMl: el.breastfeeding.checked ? BF_ML : 0,
-    creat: creat, crcl: crcl
+    creat: creat, crcl: crcl, doseKg: doseKg, doseM2: doseM2, doseByKg: doseByKg, doseByM2: doseByM2
   });
 
   var cautions = [];
@@ -913,6 +959,7 @@ function calculate(){
   if(el.heart.checked) cautions.push(t("heartWarn"));
   if(el.athlete.checked) cautions.push(t("athleteWarn"));
   if(creat > 0 && age < 18) cautions.push(t("crclNote"));
+  if(doseByKg > 0 || doseByM2 > 0) cautions.push(t("doseNote"));
   if(bmi > 70) cautions.push(t("bmiHigh"));
   renderCaution(cautions);
 
@@ -956,6 +1003,8 @@ function buildWorking(v){
   if(v.whr > 0) add("Waist/hip", v.whr.toFixed(2), "waist \u00f7 hip", r1(v.waistCm) + " \u00f7 " + r1(v.hipCm));
   if(v.crcl > 0) add("CrCl", r1(v.crcl) + " mL/min", "((140 \u2212 age) \u00d7 wt \u00d7 F) \u00f7 (72 \u00d7 Scr)",
       "((140 \u2212 " + v.age + ") \u00d7 " + r1(v.weightKg) + " \u00d7 " + (M ? 1 : 0.85) + ") \u00f7 (72 \u00d7 " + v.creat + ")");
+  if(v.doseByKg > 0) add("Dose (wt)", r1(v.doseByKg) + " mg", "rate (mg/kg) \u00d7 weight", v.doseKg + " \u00d7 " + r1(v.weightKg) + " kg");
+  if(v.doseByM2 > 0) add("Dose (BSA)", r1(v.doseByM2) + " mg", "rate (mg/m\u00b2) \u00d7 BSA", v.doseM2 + " \u00d7 " + v.bsa.toFixed(2) + " m\u00b2");
   return L;
 }
 function renderWorking(v){
@@ -1105,7 +1154,7 @@ function deleteEntry(idx){
 }
 
 function resetForm(){
-  ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","creat"].forEach(function(id){ if(el[id]) el[id].value=""; });
+  ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","creat","doseKg","doseM2"].forEach(function(id){ if(el[id]) el[id].value=""; });
   el.activity.value = "sedentary";
   el.fatRatio.value = "balanced";
   el.climate.value = "temperate";
@@ -1220,7 +1269,7 @@ function applyTheme(theme){
 }
 
 /* ---------------- wiring ---------------- */
-["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","creat","activity","fatRatio","climate","exercise"].forEach(function(id){
+["age","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","creat","doseKg","doseM2","activity","fatRatio","climate","exercise"].forEach(function(id){
   el[id].addEventListener("input", calculate);
   el[id].addEventListener("change", calculate);
 });
@@ -1314,6 +1363,9 @@ window.__chcSelfTest = function(){
   // units consistency: the same height in cm and in m gives the same BMI
   ok("units: BMI from cm == BMI from m", Math.abs((70/(1.75*1.75)) - (70/((175/100)*(175/100)))) < 1e-12);
   ok("units: 1 kg == 2.20462 lb", Math.abs(1*2.20462 - 2.20462) < 1e-9);
+  // dosing: 5 mg/kg x 70 kg = 350 mg; 100 mg/m2 x BSA(70kg/175cm) ~ 184 mg
+  ok("dose: 5 mg/kg x 70 kg = 350 mg", 5*70 === 350);
+  ok("dose: 100 mg/m2 x 1.84 m2 ~ 184 mg", Math.abs(100*Math.sqrt(70*175/3600) - 184.4) < 0.6);
   var fails = results.filter(function(r){ return r.indexOf("FAIL")===0; }).length;
   console.log(results.join("\n"));
   console.log(fails ? fails + " FAILED" : "All self-tests passed");

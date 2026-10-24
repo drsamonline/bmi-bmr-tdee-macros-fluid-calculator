@@ -45,6 +45,12 @@ setTimeout(() => {
   ok("the working panel includes creatinine clearance", rows.some((li) => li.textContent.startsWith("CrCl")));
   ok("the working panel shows a substituted formula", /=\s*\d/.test(rows[0].textContent));
 
+  fire("doseKg", "5"); fire("doseM2", "100");
+  ok("weight-based dose 5 mg/kg x 70 kg = 350 mg", txt("rDoseKg") === "350");
+  ok("BSA-based dose 100 mg/m2 x BSA ~ 184.5 mg", txt("rDoseM2") === "184.5");
+  fire("doseKg", ""); fire("doseM2", "");
+  ok("no dose -> blank", txt("rDoseKg") === "--" && txt("rDoseM2") === "--");
+
   console.log(fail ? "\n" + fail + " FAILED" : "\nAll tests passed");
   process.exit(fail ? 1 : 0);
 }, 500);
