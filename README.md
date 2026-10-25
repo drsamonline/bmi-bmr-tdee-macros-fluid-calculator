@@ -2,6 +2,12 @@
 
 # Clinical Health Calculator
 
+<!-- shot:start -->
+
+![Screenshot](docs/shot.png)
+
+<!-- shot:end -->
+
 **BMI · BMR · TDEE · Macros · Fluids · Body Composition**
 
 A single-file, offline-capable clinical calculator for adult outpatients — no build step, no dependencies, no server, no tracking.
