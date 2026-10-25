@@ -72,6 +72,35 @@ setTimeout(() => {
   ok("export passes the filename + the CSV text", !!calls[0] && calls[0][0] === "health_calculator_export.csv" && /Timestamp/.test(calls[0][1]));
   ok("export passes a CSV mime type", !!calls[0] && /text\/csv/.test(calls[0][2]));
 
+
+  // RETROFIT (kit-export-kit, second pass): the CSV must be BUILT by the shared
+  // kit's dataframe, not by a hand-rolled cell writer. The app used to carry its
+  // own `X()` that quoted every cell and prefixed any leading = + - @ with an
+  // apostrophe — which also mangled a NEGATIVE NUMBER into text. The kit's
+  // writer is RFC4180 and its guard is number-aware, so "-5" stays a number and
+  // "=1+1" is still defused. This asserts BOTH halves.
+  const realDf = w.Export.df;
+  const dfCalls = [];
+  w.Export.df = function (rows) { dfCalls.push(rows); return realDf(rows); };
+  let csvText = null;
+  w.Export.save = function (name, data) { csvText = data; return true; };
+
+  fire("age", "40"); fire("heightCm", "175"); fire("weightKg", "70");
+  fire("patient", "-5");
+  d.getElementById("btnSave").dispatchEvent(new w.Event("click"));
+  fire("patient", "=1+1");
+  d.getElementById("btnSave").dispatchEvent(new w.Event("click"));
+  d.getElementById("btnExport").dispatchEvent(new w.Event("click"));
+
+  ok("the CSV is built by the shared kit's dataframe (Export.df called)", dfCalls.length === 1);
+  ok("the dataframe got one row per saved entry", !!dfCalls[0] && dfCalls[0].length >= 2);
+  ok("a numeric cell is left as a number (-5, not '-5)",
+    /,-5[,]/.test(String(csvText)), String(csvText).split("\n")[1]);
+  ok("a formula cell is still defused ('=1+1)",
+    String(csvText).indexOf("'=1+1") >= 0);
+  ok("the CSV keeps its BOM and its header",
+    String(csvText).charAt(0) === "\ufeff" && String(csvText).indexOf("Timestamp,Patient") > 0);
+
   console.log(fail ? "\n" + fail + " FAILED" : "\nAll tests passed");
   process.exit(fail ? 1 : 0);
 }, 500);
