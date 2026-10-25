@@ -11,7 +11,7 @@ A single-file, offline-capable clinical calculator for adult outpatients — no 
 [![Live demo](https://img.shields.io/badge/Live_demo-open-a3e635?logo=html5&logoColor=white)](https://drsamonline.github.io/bmi-bmr-tdee-macros-fluid-calculator/play/)
 [![Source](https://img.shields.io/badge/Source-GitHub-0b1220?logo=github&logoColor=white)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
 
-[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![License](https://img.shields.io/badge/License-PolyForm_Noncommercial_1.0.0-blue)](LICENSE)
 [![Dependencies](https://img.shields.io/badge/Dependencies-none-success)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
 [![Offline ready](https://img.shields.io/badge/Offline-ready-success)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
 [![i18n](https://img.shields.io/badge/i18n-EN_%7C_HI_%7C_GU-orange)](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator)
@@ -72,7 +72,7 @@ The original calculator, its clinical design and the choice of formulas are his 
 |------|---------|
 | `index.html` | Production build — the minified single-file app (this is what GitHub Pages serves). |
 | `src/clinical-health-calculator.html` | The same app, un-minified and commented, for editing. |
-| `LICENSE` | MIT licence. |
+| `LICENSE` | PolyForm Noncommercial licence. |
 
 To rebuild after editing the source, minify `src/clinical-health-calculator.html` into `index.html` with any HTML minifier.
 
@@ -140,7 +140,7 @@ This is a **decision-support aid only**. Results are population estimates, not a
 
 ## License
 
-Released under the **MIT License** — see [LICENSE](LICENSE). © 2026 Dr. Sohil Momin.
+Released under the **PolyForm Noncommercial License 1.0.0** — see [LICENSE](LICENSE). © 2026 Dr. Sohil Momin.
 
 ---
 
