@@ -13,7 +13,7 @@
  */
 "use strict";
 
-const CACHE = "chc-2.6.0-20261101"; /* rewritten by scripts/build.js */
+const CACHE = "chc-2.7.0-20261101"; /* rewritten by scripts/build.js */
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", function (event) {
