@@ -44,7 +44,7 @@
       "description": "A single-file, offline-capable clinical calculator for adult outpatients covering BMI, BMR, TDEE, macros, fluid requirements, creatinine clearance, dosing and body composition, with the arithmetic shown for every result.",
       "author": { "@type": "Person", "name": "Dr. Sohil Momin", "url": "https://github.com/drsamonline" },
       "license": "https://polyformproject.org/licenses/noncommercial/1.0.0/",
-      "softwareVersion": "2.6.0",
+      "softwareVersion": "2.7.0",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
       "featureList": [
@@ -383,7 +383,7 @@ footer{padding:56px 0 40px;border-top:1px solid var(--rule);background:var(--pap
 <div class="strip">
   <div class="wrap">
     <span><b>Offline</b> · installable · one HTML file · no accounts</span>
-    <span>v2.6.0 · PolyForm Noncommercial 1.0.0</span>
+    <span>v2.7.0 · PolyForm Noncommercial 1.0.0</span>
   </div>
 </div>
 
@@ -418,7 +418,7 @@ footer{padding:56px 0 40px;border-top:1px solid var(--rule);background:var(--pap
       <div class="badges" aria-label="Repository facts">
         <img src="assets/badge-offline.svg" alt="offline: no network">
         <img src="assets/badge-deps.svg" alt="runtime dependencies: 0">
-        <img src="assets/badge-tests.svg" alt="tests: 58 passing">
+        <img src="assets/badge-tests.svg" alt="tests: 74 passing">
         <img src="assets/badge-i18n.svg" alt="languages: English, Hindi, Gujarati">
         <img src="assets/badge-licence.svg" alt="licence: PolyForm Noncommercial 1.0.0">
       </div>
@@ -541,10 +541,12 @@ footer{padding:56px 0 40px;border-top:1px solid var(--rule);background:var(--pap
       <div><h4>No request after the page loads</h4><p>No font, no script, no image and no beacon is fetched from anywhere. Load it once, then unplug the network.</p></div>
       <div><h4>No diagnosis</h4><p>It does not decide what is wrong with a patient. It computes estimates and states the cut-offs it applied.</p></div>
       <div><h4>No prescribing decision</h4><p>The dosing tiles multiply a rate by a weight or a surface area. They do not choose the drug, the rate or the patient.</p></div>
+      <div><h4>Nothing leaves the device</h4><p>Saved entries live in this browser. Export is CSV for a record you keep, or AES-256-GCM under a passphrase you choose — the key never leaves the page.</p></div>
+      <div><h4>No silent edits</h4><p>Each saved entry carries the digest of the one before it. "Verify log" names the first entry that no longer matches — an edit, not an attacker holding the whole file.</p></div>
     </div>
     <div class="numbers reveal">
       <div><span class="n">9</span><span class="l">calculators, each with its source named</span></div>
-      <div><span class="n">58</span><span class="l">known-value checks in the app</span></div>
+      <div><span class="n">74</span><span class="l">checks in the suite, run on every push</span></div>
       <div><span class="n">0</span><span class="l">runtime dependencies</span></div>
       <div><span class="n">3</span><span class="l">languages — English, हिन्दी, ગુજરાતી</span></div>
     </div>
@@ -666,7 +668,7 @@ footer{padding:56px 0 40px;border-top:1px solid var(--rule);background:var(--pap
     <p class="disclaimer">Decision-support aid only. Results are population estimates, not a diagnosis, and do not replace clinical judgement. Use adjusted weights and clinical context for individual patients, and apply appropriate caution for renal, cardiac and paediatric cases. This page is a project landing page; it is not medical advice.</p>
     <div class="foot-bottom">
       <span>© 2026 Dr. Sohil Momin · PolyForm Noncommercial 1.0.0</span>
-      <span>v2.6.0 · page assets drawn locally, no external requests</span>
+      <span>v2.7.0 · page assets drawn locally, no external requests</span>
     </div>
   </div>
 </footer>
