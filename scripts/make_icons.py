@@ -53,6 +53,7 @@ GLYPHS = {
     "windows": '<path d="M3 4.9 10.2 3.9v7.2H3V4.9Zm8.3-1.1L21 2.6v8.5h-9.7V3.8ZM3 12.1h7.2v7.2L3 18.3v-6.2Zm8.3 0H21v8.5l-9.7-1.2v-7.3Z"/>',
     "android": '<path d="M17.6 9.5l1.8-3.2a.4.4 0 0 0-.7-.4l-1.9 3.2a11.4 11.4 0 0 0-9.8 0L5.1 5.9a.4.4 0 0 0-.7.4l1.8 3.2A10.8 10.8 0 0 0 1.5 18h21a10.8 10.8 0 0 0-4.9-8.5ZM7 15.2a1.2 1.2 0 1 1 0-2.5 1.2 1.2 0 0 1 0 2.5Zm10 0a1.2 1.2 0 1 1 0-2.5 1.2 1.2 0 0 1 0 2.5Z"/>',
     "linux": '<path d="M4.5 6.5 9.5 12l-5 5.5M11.5 18H19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>',
+    "checksums": '<path d="M12 2.6l7 2.8v6.1c0 4.4-2.9 8.1-7 9.9-4.1-1.8-7-5.5-7-9.9V5.4l7-2.8Zm-3.2 9.6 2.3 2.3 4.2-4.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
     "web": '<path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm0 0c2.6 2.6 2.6 16.4 0 19M2.8 12h18.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>',
 }
 

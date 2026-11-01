@@ -33,7 +33,7 @@ A single-file clinical calculator for adult outpatients that prints the formula 
 
 ## Download
 
-All four builds come from the same commit as the live demo, and the Windows and Android binaries carry this app's own icon — the ECG mark, drawn in this repository and stamped into the executable and the launcher by the build pipeline.
+Every build comes from the same commit as the live demo, and the Windows and Android binaries carry this app's own icon — the ECG mark, drawn in this repository and stamped into the executable and the launcher by the build pipeline.
 
 | | Build | What it is |
 |---|---|---|
@@ -41,6 +41,8 @@ All four builds come from the same commit as the live demo, and the Windows and 
 | <img src="docs/assets/icon-android.svg" width="18" height="18" alt=""> **Android** | [`bmi-bmr-tdee-macros-fluid-calculator.apk`](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/releases/latest/download/bmi-bmr-tdee-macros-fluid-calculator.apk) | Signed APK. Sideload only — allow installs from unknown sources. |
 | <img src="docs/assets/icon-linux.svg" width="18" height="18" alt=""> **Linux** | [`bmi-bmr-tdee-macros-fluid-calculator-linux`](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/releases/latest/download/bmi-bmr-tdee-macros-fluid-calculator-linux) | Single portable binary. `chmod +x` and run. |
 | <img src="docs/assets/icon-web.svg" width="18" height="18" alt=""> **Any browser** | [`index.html`](https://raw.githubusercontent.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/main/index.html) | One HTML file. Save it, open it, or add it to a phone's home screen. |
+| <img src="docs/assets/icon-web.svg" width="18" height="18" alt=""> **USB stick** | [`bmi-bmr-tdee-macros-fluid-calculator-web.zip`](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/releases/latest/download/bmi-bmr-tdee-macros-fluid-calculator-web.zip) | `index.html`, the manifest, the worker and the icons, zipped. For a machine with no installer rights. |
+| <img src="docs/assets/icon-checksums.svg" width="18" height="18" alt=""> **Checksums** | [`SHA256SUMS.txt`](https://github.com/drsamonline/bmi-bmr-tdee-macros-fluid-calculator/releases/latest/download/SHA256SUMS.txt) | SHA-256 of every asset above. Check a sideloaded APK before you install it. |
 
 ---
 
