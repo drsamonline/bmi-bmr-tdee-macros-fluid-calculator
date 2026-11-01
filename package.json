@@ -1,6 +1,6 @@
 {
   "name": "clinical-health-calculator",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "description": "Build and headless tests for the single-file Clinical Health Calculator (BMI, BMR, TDEE, macros, fluids, creatinine clearance, dosing, CHA2DS2-VASc).",
   "scripts": {

@@ -222,6 +222,9 @@ html[data-contrast="high"][data-theme="light"]{
 /* the data toolbar is fixed bottom-left and covered the Export button;
    lift it clear of the action bar */
 #__tools{bottom:124px !important;}
+/* on a phone the toolbar floats over the form it is meant to help with;
+   every one of its actions is already in the app's own bars */
+@media (max-width:640px){#__tools{display:none !important;}}
 
 /* print, restated after the base rule that hides these blocks on screen:
    a later declaration of equal specificity wins regardless of the media query */
@@ -538,6 +541,16 @@ html[data-contrast="high"][data-theme="light"]{
           <dt>Protein / fat / carbs / fiber</dt><dd>Daily macro targets; carbohydrate fills the remaining calories.</dd>
           <dt>Fluid</dt><dd>30 mL/kg/day baseline, adjusted for climate, exercise, fever and breastfeeding.</dd>
         </dl>
+        <h4 class="limits-h">When these numbers do not apply</h4>
+        <ul class="limits">
+          <li><b>BMI</b> overstates fat in a muscular athlete and understates it in sarcopenia, oedema and the very elderly. It is a screening number, not a diagnosis.</li>
+          <li><b>Body fat (Deurenberg)</b> is a population equation from BMI, age and sex. It is not a measurement and is least reliable at the extremes and in South Asian body composition.</li>
+          <li><b>BMR (Mifflin–St Jeor)</b> was derived in healthy adults. It does not hold in pregnancy, in children, in critical illness, or after major weight loss.</li>
+          <li><b>CrCl (Cockcroft–Gault)</b> needs steady-state renal function and a steady-state creatinine. It is not valid in acute kidney injury, pregnancy, or at extremes of body size — use it with adjusted weight and clinical judgement.</li>
+          <li><b>Dosing</b> here is arithmetic: rate × weight, or rate × BSA. It does not choose the drug, the rate, the interval or the patient. Check the product's own dosing.</li>
+          <li><b>CHA₂DS₂-VASc</b> applies to non-valvular atrial fibrillation. It is not a general risk score and it does not decide anticoagulation.</li>
+          <li><b>Fluids</b> assume ordinary renal and cardiac function. In heart failure, CKD or SIADH the requirement is a clinical decision, not 30 mL/kg.</li>
+        </ul>
       </details>
       <div class="print-sign">Clinician: ______________________________&nbsp;&nbsp;Date: ________________&nbsp;&nbsp;Signature: ______________________________</div>
       <div class="hint" style="margin-top:8px;" data-i18n="footnote">Protein scales 0.8-2.0 g/kg by activity (DRI/ACSM). Fluid uses a 30 mL/kg baseline adjusted for climate, exercise and clinical flags. Always apply clinical judgement for renal, cardiac and paediatric patients.</div>
@@ -553,6 +566,12 @@ html[data-contrast="high"][data-theme="light"]{
         <div class="trend" id="trend"></div>
       </div>
       <button class="ico-btn hidden" id="btnClearAll" type="button" style="margin-top:8px;" data-i18n="clearAll">Clear all entries</button>
+      <div class="saved-tools">
+        <button class="ico-btn" id="btnEncExport" type="button" data-i18n="encExport">Encrypted export</button>
+        <button class="ico-btn" id="btnEncImport" type="button" data-i18n="encImport">Restore encrypted</button>
+        <button class="ico-btn" id="btnVerify" type="button" data-i18n="verifyLog">Verify log</button>
+      </div>
+      <input type="file" id="encInput" accept=".json,application/json" class="hidden">
     </section>
   </main>
 
@@ -573,6 +592,16 @@ html[data-contrast="high"][data-theme="light"]{
       <li>Body fat: Deurenberg P et al. <em>Br J Nutr</em> 1991;65:105-14.</li>
       <li>Waist: IDF/WHO Asia-Pacific cut-offs (men &gt;90 cm, women &gt;80 cm).</li>
     </ul>
+  </details>
+  <details class="refs batch">
+    <summary data-i18n="batchTitle">Batch — compute a list</summary>
+    <p class="hint" data-i18n="batchHint" style="margin:8px 0;">Paste rows from a spreadsheet: patient, age, sex, height cm, weight kg, waist cm. A header row is skipped.</p>
+    <textarea id="batchText" rows="5" spellcheck="false" placeholder="OP-1041, 34, M, 172, 69, 84&#10;OP-1042, 51, F, 158, 74, 96"></textarea>
+    <div class="batch-actions">
+      <button class="ico-btn" id="btnBatchRun" type="button" data-i18n="batchRun">Compute</button>
+      <button class="ico-btn" id="btnBatchExport" type="button" data-i18n="batchExport">Export results</button>
+    </div>
+    <div class="batch-out" id="batchOut"></div>
   </details>
 </div>
 
@@ -978,7 +1007,7 @@ df.fromCSV = function (text) {
 (function(){
 "use strict";
 
-var VERSION = "2.6.0";
+var VERSION = "2.7.0";
 var STORAGE_KEY = "chc_entries_v2";
 var THEME_KEY = "chc_theme";
 var LANG_KEY = "chc_lang";
@@ -995,6 +1024,21 @@ var $ = function(id){ return document.getElementById(id); };
 /* ---------------- i18n ---------------- */
 var I18N = {
   en: {
+    encExport:"Encrypted export",
+    encImport:"Restore encrypted",
+    verifyLog:"Verify log",
+    batchTitle:"Batch \u2014 compute a list",
+    batchHint:"Paste rows from a spreadsheet: patient, age, sex, height cm, weight kg, waist cm. A header row is skipped.",
+    batchRun:"Compute",
+    batchExport:"Export results",
+    verifyOk:"Log verified",
+    verifyBroken:"Log broken at entry",
+    passPrompt:"Enter a passphrase",
+    passBad:"Wrong passphrase or damaged file",
+    verifyNone:"This browser cannot compute the digest the log needs.",
+    verifyUnsealed:"Some entries were saved before 2.7 and carry no hash.",
+    batchEmpty:"Paste some rows first.",
+    encNone:"This browser cannot encrypt. Use Export CSV instead.",
     roundNote:"Rounded half-up: BMI, body fat and grams to 1 decimal; kcal and mL to whole numbers; ratios to 2 decimals.",
     deltaLabel:"Change since last entry",
     textSize:"Text size",
@@ -1058,6 +1102,17 @@ var I18N = {
     trend:"Change since first entry", unitCm:"cm", unitKg:"kg"
   },
   hi: {
+    encExport:"\u090f\u0928\u0915\u094d\u0930\u093f\u092a\u094d\u091f\u0947\u0921 \u090f\u0915\u094d\u0938\u092a\u094b\u0930\u094d\u091f",
+    encImport:"\u090f\u0928\u0915\u094d\u0930\u093f\u092a\u094d\u091f\u0947\u0921 \u0930\u093f\u0938\u094d\u091f\u094b\u0930 \u0915\u0930\u0947\u0902",
+    verifyLog:"\u0932\u0949\u0917 \u0935\u0947\u0930\u093f\u092b\u093e\u0908 \u0915\u0930\u0947\u0902",
+    batchTitle:"\u092c\u0948\u091a \u2014 \u0932\u093f\u0938\u094d\u091f \u0915\u0948\u0932\u0915\u0941\u0932\u0947\u091f \u0915\u0930\u0947\u0902",
+    batchHint:"\u0938\u094d\u092a\u094d\u0930\u0947\u0921\u0936\u0940\u091f \u0938\u0947 \u0930\u094b \u092a\u0947\u0938\u094d\u091f \u0915\u0930\u0947\u0902: \u092e\u0930\u0940\u091c\u093c, \u0909\u092e\u094d\u0930, \u0932\u093f\u0902\u0917, \u090a\u0902\u091a\u093e\u0908 \u0938\u0947\u092e\u0940, \u0935\u091c\u093c\u0928 \u0915\u093f\u0932\u094b, \u0915\u092e\u0930 \u0938\u0947\u092e\u0940\u0964 \u0939\u0947\u0921\u0930 \u0930\u094b \u0915\u094b \u091b\u094b\u0921\u093c \u0926\u093f\u092f\u093e \u091c\u093e\u0924\u093e \u0939\u0948\u0964",
+    batchRun:"\u0915\u0948\u0932\u0915\u0941\u0932\u0947\u091f \u0915\u0930\u0947\u0902",
+    batchExport:"\u0930\u093f\u091c\u093c\u0932\u094d\u091f \u090f\u0915\u094d\u0938\u092a\u094b\u0930\u094d\u091f \u0915\u0930\u0947\u0902",
+    verifyOk:"\u0932\u0949\u0917 \u0935\u0947\u0930\u093f\u092b\u093e\u0908 \u0939\u094b \u0917\u092f\u093e",
+    verifyBroken:"\u090f\u0902\u091f\u094d\u0930\u0940 \u092a\u0930 \u0932\u0949\u0917 \u091f\u0942\u091f \u0917\u092f\u093e",
+    passPrompt:"\u092a\u093e\u0938\u092b\u093c\u094d\u0930\u0947\u091c\u093c \u0921\u093e\u0932\u0947\u0902",
+    passBad:"\u0917\u0932\u0924 \u092a\u093e\u0938\u092b\u093c\u094d\u0930\u0947\u091c\u093c \u092f\u093e \u0921\u0948\u092e\u0947\u091c\u094d\u0921 \u092b\u093c\u093e\u0907\u0932",
     roundNote:"\u0930\u093e\u0909\u0902\u0921\u0947\u0921 \u0939\u093e\u092b-\u0905\u092a: BMI, \u092c\u0949\u0921\u0940 \u092b\u0948\u091f \u0914\u0930 \u0917\u094d\u0930\u093e\u092e\u094d\u0938 \u0915\u094b 1 \u0921\u0947\u0938\u093f\u092e\u0932 \u0924\u0915; kcal \u0914\u0930 mL \u0915\u094b \u092a\u0942\u0930\u094d\u0923 \u0938\u0902\u0916\u094d\u092f\u093e\u0913\u0902 \u092e\u0947\u0902; \u0930\u0947\u0936\u093f\u092f\u094b \u0915\u094b 2 \u0921\u0947\u0938\u093f\u092e\u0932 \u0924\u0915\u0964",
     deltaLabel:"\u092a\u093f\u091b\u0932\u0940 \u090f\u0902\u091f\u094d\u0930\u0940 \u0915\u0947 \u092c\u093e\u0926 \u0938\u0947 \u092c\u0926\u0932\u093e\u0935",
     textSize:"\u091f\u0947\u0915\u094d\u0938\u094d\u091f \u0938\u093e\u0907\u091c\u093c",
@@ -1118,6 +1173,17 @@ var I18N = {
     trend:"\u092a\u0939\u0932\u0940 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f \u0938\u0947 \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928", unitCm:"cm", unitKg:"kg"
   },
   gu: {
+    encExport:"\u0a8f\u0aa8\u0acd\u0a95\u0acd\u0ab0\u0abf\u0aaa\u0acd\u0a9f\u0ac7\u0aa1 \u0a8f\u0a95\u0acd\u0ab8\u0aaa\u0acb\u0ab0\u0acd\u0a9f",
+    encImport:"\u0a8f\u0aa8\u0acd\u0a95\u0acd\u0ab0\u0abf\u0aaa\u0acd\u0a9f\u0ac7\u0aa1 \u0ab0\u0abf\u0ab8\u0acd\u0a9f\u0acb\u0ab0 \u0a95\u0ab0\u0acb",
+    verifyLog:"\u0ab2\u0acb\u0a97 \u0a9a\u0a95\u0abe\u0ab8\u0acb",
+    batchTitle:"\u0aac\u0ac7\u0a9a \u2014 \u0ab2\u0abf\u0ab8\u0acd\u0a9f \u0a95\u0aae\u0acd\u0aaa\u0acd\u0aaf\u0ac1\u0a9f \u0a95\u0ab0\u0acb",
+    batchHint:"\u0ab8\u0acd\u0aaa\u0acd\u0ab0\u0ac7\u0aa1\u0ab6\u0ac0\u0a9f\u0aae\u0abe\u0a82\u0aa5\u0ac0 \u0ab9\u0ab0\u0acb\u0ab3 \u0aaa\u0ac7\u0ab8\u0acd\u0a9f \u0a95\u0ab0\u0acb: \u0aa6\u0ab0\u0acd\u0aa6\u0ac0, \u0a89\u0a82\u0aae\u0ab0, \u0a9c\u0abe\u0aa4\u0abf, \u0a8a\u0a82\u0a9a\u0abe\u0a88 \u0ab8\u0ac7\u0aae\u0ac0, \u0ab5\u0a9c\u0aa8 \u0a95\u0abf\u0a97\u0acd\u0ab0\u0abe, \u0a95\u0aae\u0ab0 \u0ab8\u0ac7\u0aae\u0ac0. \u0ab9\u0ac7\u0aa1\u0ab0 \u0ab9\u0ab0\u0acb\u0ab3 \u0a9b\u0acb\u0aa1\u0ac0 \u0aa6\u0ac7\u0ab5\u0abe\u0aae\u0abe\u0a82 \u0a86\u0ab5\u0ac7 \u0a9b\u0ac7.",
+    batchRun:"\u0a95\u0aae\u0acd\u0aaa\u0acd\u0aaf\u0ac1\u0a9f \u0a95\u0ab0\u0acb",
+    batchExport:"\u0aaa\u0ab0\u0abf\u0aa3\u0abe\u0aae\u0acb \u0a8f\u0a95\u0acd\u0ab8\u0aaa\u0acb\u0ab0\u0acd\u0a9f \u0a95\u0ab0\u0acb",
+    verifyOk:"\u0ab2\u0acb\u0a97 \u0a9a\u0a95\u0abe\u0ab8\u0abe\u0aaf\u0ac7\u0ab2",
+    verifyBroken:"\u0a8f\u0aa8\u0acd\u0a9f\u0acd\u0ab0\u0ac0 \u0ab5\u0a96\u0aa4\u0ac7 \u0ab2\u0acb\u0a97 \u0aa4\u0ac2\u0a9f\u0ac7\u0ab2\u0acb",
+    passPrompt:"\u0aaa\u0abe\u0ab8\u0aab\u0acd\u0ab0\u0ac7\u0a9d \u0aa6\u0abe\u0a96\u0ab2 \u0a95\u0ab0\u0acb",
+    passBad:"\u0a96\u0acb\u0a9f\u0acb \u0aaa\u0abe\u0ab8\u0aab\u0acd\u0ab0\u0ac7\u0a9d \u0a85\u0aa5\u0ab5\u0abe \u0a95\u0acd\u0ab7\u0aa4\u0abf\u0a97\u0acd\u0ab0\u0ab8\u0acd\u0aa4 \u0aab\u0abe\u0a87\u0ab2",
     roundNote:"\u0ab0\u0abe\u0a89\u0aa8\u0acd\u0aa1\u0ac7\u0aa1 \u0ab9\u0abe\u0aab-\u0a85\u0aaa: BMI, \u0aac\u0acb\u0aa1\u0ac0 \u0aab\u0ac7\u0a9f \u0a85\u0aa8\u0ac7 \u0a97\u0acd\u0ab0\u0abe\u0aae\u0acd\u0ab8\u0aa8\u0ac7 1 \u0aa6\u0ab6\u0abe\u0a82\u0ab6 \u0ab8\u0ac1\u0aa7\u0ac0; kcal \u0a85\u0aa8\u0ac7 mL \u0aa8\u0ac7 \u0aaa\u0ac2\u0ab0\u0acd\u0aa3 \u0ab8\u0a82\u0a96\u0acd\u0aaf\u0abe\u0a93 \u0ab8\u0ac1\u0aa7\u0ac0; \u0ab0\u0ac7\u0ab6\u0abf\u0aaf\u0acb\u0aa8\u0ac7 2 \u0aa6\u0ab6\u0abe\u0a82\u0ab6 \u0ab8\u0ac1\u0aa7\u0ac0.",
     deltaLabel:"\u0a9b\u0ac7\u0ab2\u0acd\u0ab2\u0ac0 \u0a8f\u0aa8\u0acd\u0a9f\u0acd\u0ab0\u0ac0 \u0aaa\u0a9b\u0ac0\u0aa8\u0acb \u0aab\u0ac7\u0ab0\u0aab\u0abe\u0ab0",
     textSize:"\u0a9f\u0ac7\u0a95\u0acd\u0ab8\u0acd\u0a9f \u0ab8\u0abe\u0a88\u0a9d",
@@ -1209,7 +1275,7 @@ var state = { gender:"M", heightUnit:"cm", weightUnit:"kg", proteinBasis:"total"
 var el = {};
 ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise","fever","breastfeeding","renal","heart","athlete",
  "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","creat","rCrcl","doseKg","doseM2","rDoseKg","rDoseM2","rChads","chf","htn","dm","stroke","vascular","working",
- "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput","deltaRow","printMeta","printHead","buildStamp","btnText","btnContrast"].forEach(function(id){ el[id]=$(id); });
+ "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput","deltaRow","printMeta","printHead","buildStamp","btnText","btnContrast","batchText","batchOut","btnBatchRun","btnBatchExport","btnEncExport","btnEncImport","btnVerify","encInput"].forEach(function(id){ el[id]=$(id); });
 
 el.ver.textContent = VERSION;
 el.yearNow.textContent = new Date().getFullYear();
@@ -1678,7 +1744,7 @@ function setToggle(id, val){
 var lastDeleted = null;
 function deleteEntry(idx){
   var removed = entries.splice(idx,1)[0];
-  persist(); renderSaved();
+  persist(); renderSaved(); resealAll();
   toast(t("deletedMsg"), t("undo"), function(){ entries.splice(Math.min(idx, entries.length),0,removed); persist(); renderSaved(); });
 }
 
@@ -1703,6 +1769,7 @@ function saveEntry(next){
   if(!data) return;
   if(entries.length >= MAX_ENTRIES){ toast("Entry limit (" + MAX_ENTRIES + ") reached."); return; }
   entries.push(data); persist(); renderSaved();
+  sealEntry(data);
   toast(t("savedMsg"));
   if(next){ resetForm(); el.age.focus(); }
 }
@@ -1768,7 +1835,7 @@ function importCsv(text){
     };
     if(en.age > 0 && en.weightKg > 0){ entries.push(en); added++; }
   }
-  persist(); renderSaved();
+  persist(); renderSaved(); resealAll();
   toast(added + " " + t("importedMsg"));
 }
 
@@ -1842,6 +1909,217 @@ function applyContrast(on){
   try{ localStorage.setItem(CONTRAST_KEY, on ? "high" : "normal"); }catch(e){}
 }
 
+/* ---------------- batch: compute a list, offline ---------------- */
+/* A screening camp is not one patient at a time. Rows are pasted from a
+   spreadsheet (comma or tab separated); each row is typed into the same form
+   the clinician uses, so the arithmetic is the app's own and there is no second
+   implementation to drift. The form is put back exactly as it was afterwards. */
+var batchRows = [];
+function snapshotForm(){
+  return {
+    patient: el.patient.value, age: el.age.value, waist: el.waist.value, hip: el.hip.value,
+    heightCm: el.heightCm.value, weightKg: el.weightKg.value,
+    gender: state.gender, activity: el.activity.value
+  };
+}
+function restoreForm(f){
+  el.patient.value = f.patient; el.age.value = f.age;
+  el.waist.value = f.waist; el.hip.value = f.hip;
+  state.gender = f.gender; setToggle("genderToggle", f.gender);
+  state.heightUnit = "cm"; setToggle("heightUnitToggle", "cm"); showHeightWraps(); setHeightFromCm(num(f.heightCm));
+  state.weightUnit = "kg"; setToggle("weightUnitToggle", "kg"); showWeightWraps(); setWeightFromKg(num(f.weightKg));
+  el.activity.value = f.activity;
+  calculate();
+}
+function setRow(c){
+  el.patient.value = c[0] || "";
+  el.age.value = c[1] || "";
+  var sx = String(c[2] || "").trim().toLowerCase();
+  state.gender = (sx.charAt(0) === "f") ? "F" : "M";
+  setToggle("genderToggle", state.gender);
+  state.heightUnit = "cm"; setToggle("heightUnitToggle", "cm"); showHeightWraps(); setHeightFromCm(num(c[3]));
+  state.weightUnit = "kg"; setToggle("weightUnitToggle", "kg"); showWeightWraps(); setWeightFromKg(num(c[4]));
+  el.waist.value = c[5] || "";
+}
+function runBatch(){
+  var text = (el.batchText.value || "").trim();
+  if(!text){ toast(t("batchEmpty")); return; }
+  var lines = text.split(/\r?\n/).filter(function(l){ return l.trim(); });
+  var delim = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+  var keep = snapshotForm();
+  var out = [];
+  for(var i=0;i<lines.length;i++){
+    var c = lines[i].split(delim).map(function(x){ return x.trim(); });
+    if(c.length < 5) continue;
+    if(i === 0 && /age/i.test(c[1] || "")) continue;          /* a header row */
+    setRow(c);
+    var d = calculate();
+    if(d) out.push(d);
+  }
+  restoreForm(keep);
+  batchRows = out;
+  renderBatch();
+  toast(out.length + " \u00b7 " + t("batchRun"));
+}
+function renderBatch(){
+  var box = el.batchOut; if(!box) return;
+  if(!batchRows.length){ box.innerHTML = ""; return; }
+  var h = "<table><thead><tr><th>Patient</th><th>Age</th><th>Sex</th><th>BMI</th><th>BMR</th><th>TDEE</th><th>Fluid</th></tr></thead><tbody>";
+  var shown = batchRows.slice(0, 25);
+  for(var i=0;i<shown.length;i++){
+    var r = shown[i];
+    h += "<tr><td>" + esc(r.patient || "\u2014") + "</td><td>" + r.age + "</td><td>" + r.gender +
+      "</td><td>" + r.bmi + "</td><td>" + r.bmr + "</td><td>" + r.tdee + "</td><td>" + r.fluidMl + " mL</td></tr>";
+  }
+  h += "</tbody></table>";
+  if(batchRows.length > shown.length){
+    h += '<div class="more-rows">' + (batchRows.length - shown.length) + " more in the export</div>";
+  }
+  box.innerHTML = h;
+}
+function exportBatch(){
+  if(!batchRows.length){ toast(t("noData")); return; }
+  var rows = batchRows.map(function(en){
+    return {
+      Patient: en.patient, Age: en.age, Gender: en.gender, HeightCm: en.heightCm, WeightKg: en.weightKg,
+      WaistCm: en.waistCm, BMI: en.bmi, BMI_Category: en.bmiCat, BMR: en.bmr, TDEE: en.tdee,
+      Protein_g: en.protein, Fat_g: en.fat, Carbs_g: en.carbs, Fluid_mL: en.fluidMl,
+      IBW_kg: en.ibw, BSA_m2: en.bsa, BodyFat_pct: en.bf, CrCl: en.crcl,
+      GeneratedBy: "Dr. Sohil Momin"
+    };
+  });
+  Export.save("health_calculator_batch.csv", "\uFEFF" + Export.df(rows).toCSV(), "text/csv;charset=utf-8;");
+}
+
+/* ---------------- encrypted export ---------------- */
+/* CSV on a shared laptop is a plain-text list of patients. This is AES-256-GCM
+   with a key derived from the passphrase by PBKDF2 — all of it in the browser's
+   own crypto, so still no dependency and still no network. */
+function hasCrypto(){
+  return !!(window.crypto && window.crypto.subtle && window.TextEncoder);
+}
+function b64(buf){
+  var a = new Uint8Array(buf), s = "";
+  for(var i=0;i<a.length;i++) s += String.fromCharCode(a[i]);
+  return btoa(s);
+}
+function unb64(str){
+  var bin = atob(str), a = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) a[i] = bin.charCodeAt(i);
+  return a;
+}
+async function deriveKey(pass, salt, usage){
+  var km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: salt, iterations: 150000, hash: "SHA-256" },
+    km, { name: "AES-GCM", length: 256 }, false, [usage]
+  );
+}
+async function encryptEntries(pass){
+  var salt = crypto.getRandomValues(new Uint8Array(16));
+  var iv = crypto.getRandomValues(new Uint8Array(12));
+  var key = await deriveKey(pass, salt, "encrypt");
+  var payload = JSON.stringify({
+    app: "Clinical Health Calculator", version: VERSION,
+    exported: new Date().toISOString(), entries: entries
+  });
+  var ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, new TextEncoder().encode(payload));
+  return {
+    format: "chc-encrypted-v1",
+    kdf: { name: "PBKDF2", hash: "SHA-256", iterations: 150000, salt: b64(salt) },
+    cipher: { name: "AES-GCM", iv: b64(iv) },
+    data: b64(ct)
+  };
+}
+async function decryptFile(obj, pass){
+  var key = await deriveKey(pass, unb64(obj.kdf.salt), "decrypt");
+  var pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(obj.cipher.iv) }, key, unb64(obj.data));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function doEncryptedExport(){
+  if(!entries.length){ toast(t("noData")); return; }
+  if(!hasCrypto()){ toast(t("encNone")); return; }
+  var pass = window.prompt(t("passPrompt"));
+  if(!pass) return;
+  try{
+    var box = await encryptEntries(pass);
+    Export.save("health_calculator_encrypted.json", JSON.stringify(box, null, 2), "application/json");
+    toast(t("savedMsg"));
+  }catch(e){ toast(t("encNone")); }
+}
+async function doEncryptedImport(file){
+  if(!hasCrypto()){ toast(t("encNone")); return; }
+  var text = await file.text();
+  var box;
+  try{ box = JSON.parse(text); }catch(e){ toast(t("passBad")); return; }
+  if(!box || box.format !== "chc-encrypted-v1"){ toast(t("passBad")); return; }
+  var pass = window.prompt(t("passPrompt"));
+  if(!pass) return;
+  try{
+    var payload = await decryptFile(box, pass);
+    var list = (payload && payload.entries) || [];
+    if(!list.length){ toast(t("noData")); return; }
+    if(!confirm(t("importedMsg") + " " + list.length + " \u2014 " + t("encImport") + "?")) return;
+    entries = entries.concat(list.filter(function(e){ return e && e.ts; }));
+    persist(); renderSaved(); resealAll();
+    toast(list.length + " " + t("importedMsg"));
+  }catch(e){ toast(t("passBad")); }
+}
+
+/* ---------------- a sealed log ---------------- */
+/* Each entry carries the digest of the one before it, so a record cannot be
+   edited or removed on its own without the chain failing at that point. It
+   detects an edit, not an attacker: someone who can rewrite the whole file can
+   rewrite the whole chain. That limit is the honest one, and it is stated in
+   the README. */
+function entryPayload(en){
+  return JSON.stringify([
+    en.ts, en.patient || "", en.age, en.gender, en.heightCm, en.weightKg,
+    en.waistCm || "", en.bmi, en.tdee, en.fluidMl || ""
+  ]);
+}
+async function sha256Hex(str){
+  var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  var a = new Uint8Array(buf), out = "";
+  for(var i=0;i<a.length;i++) out += (a[i] < 16 ? "0" : "") + a[i].toString(16);
+  return out;
+}
+async function sealEntry(en){
+  if(!hasCrypto()) return;
+  try{
+    var prev = "";
+    for(var i=entries.length-2;i>=0;i--){ if(entries[i].hash){ prev = entries[i].hash; break; } }
+    en.prevHash = prev;
+    en.hash = await sha256Hex(prev + "|" + entryPayload(en));
+    persist();
+  }catch(e){}
+}
+async function resealAll(){
+  if(!hasCrypto()) return;
+  try{
+    var prev = "";
+    for(var i=0;i<entries.length;i++){
+      entries[i].prevHash = prev;
+      entries[i].hash = await sha256Hex(prev + "|" + entryPayload(entries[i]));
+      prev = entries[i].hash;
+    }
+    persist();
+  }catch(e){}
+}
+async function verifyLog(){
+  if(!entries.length){ toast(t("noData")); return; }
+  if(!hasCrypto()){ toast(t("verifyNone")); return; }
+  var prev = "";
+  for(var i=0;i<entries.length;i++){
+    var en = entries[i];
+    if(!en.hash){ toast(t("verifyUnsealed")); return; }
+    var h = await sha256Hex(prev + "|" + entryPayload(en));
+    if(h !== en.hash){ toast(t("verifyBroken") + " " + (i+1)); return; }
+    prev = en.hash;
+  }
+  toast(t("verifyOk") + " \u00b7 " + entries.length);
+}
+
 /* ---------------- toast ---------------- */
 var toastTimer = null;
 function toast(msg, actionLabel, action){
@@ -1906,9 +2184,21 @@ el.btnClearAll.addEventListener("click", function(){
   if(!entries.length) return;
   if(!confirm(t("clearAll") + "?")) return;
   var backup = entries.slice();
-  entries = []; persist(); renderSaved();
-  toast(t("clearedMsg"), t("undo"), function(){ entries = backup; persist(); renderSaved(); });
+  entries = []; persist(); renderSaved(); resealAll();
+  toast(t("clearedMsg"), t("undo"), function(){ entries = backup; persist(); renderSaved(); resealAll(); });
 });
+$("btnBatchRun").addEventListener("click", runBatch);
+$("btnBatchExport").addEventListener("click", exportBatch);
+$("btnEncExport").addEventListener("click", doEncryptedExport);
+$("btnVerify").addEventListener("click", verifyLog);
+$("btnEncImport").addEventListener("click", function(){ el.encInput.click(); });
+el.encInput.addEventListener("change", function(){
+  var f = el.encInput.files && el.encInput.files[0];
+  el.encInput.value = "";
+  if(!f) return;
+  doEncryptedImport(f);
+});
+
 $("btnText").addEventListener("click", function(){
   var order = ["md","lg","xl"];
   var cur = document.documentElement.getAttribute("data-textsize") || "md";
@@ -1967,6 +2257,20 @@ document.addEventListener("keydown", function(e){
   if(meta && e.key.toLowerCase() === "s"){ e.preventDefault(); saveEntry(false); }
   else if(meta && e.key === "Enter"){ e.preventDefault(); saveEntry(true); }
 });
+
+/* Exposed for the test harness only: the crypto paths cannot be driven through
+   the DOM, and an untested encryption routine in a clinical app is worse than
+   none. Nothing here is used by the app itself. */
+window.__chc = {
+  encryptEntries: encryptEntries,
+  decryptFile: decryptFile,
+  sha256Hex: sha256Hex,
+  verifyLog: verifyLog,
+  resealAll: resealAll,
+  hasCrypto: hasCrypto,
+  entries: function(){ return entries; },
+  setEntries: function(list){ entries = list; persist(); renderSaved(); }
+};
 
 /* ---------------- init ---------------- */
 function init(){
@@ -2032,7 +2336,26 @@ if(/[?&]selftest=1/.test(location.search)) window.__chcSelfTest();
 })();
 </script>
 
-<style>:focus-visible{outline:2px solid currentColor;outline-offset:2px}</style>
+<style>:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+/* ---------- batch, encryption, the sealed log, the limits panel ---------- */
+.saved-tools{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.saved-tools .ico-btn{font-size:11.5px; padding:5px 8px}
+textarea#batchText{
+  width:100%; min-height:96px; padding:8px; border-radius:8px; font-size:12.5px;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  border:1px solid var(--border); background:var(--card2); color:var(--text);
+}
+.batch-actions{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap}
+.batch-out{margin-top:10px; overflow-x:auto}
+.batch-out table{border-collapse:collapse; width:100%; font-size:12px}
+.batch-out th,.batch-out td{border-bottom:1px solid var(--border); padding:4px 6px; text-align:left; white-space:nowrap}
+.batch-out th{color:var(--muted); font-weight:600}
+.batch-out .more-rows{color:var(--muted); font-size:11.5px; margin-top:6px}
+.limits-h{margin:16px 0 0; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+.limits{list-style:none; padding:0; margin:8px 0 0; font-size:12.5px}
+.limits li{padding:6px 0; border-bottom:1px solid var(--border); color:var(--muted); line-height:1.5}
+.limits li b{color:var(--text); font-weight:600}
+</style>
 <script>
 /* THE FOUR THINGS EVERY APP HERE SHOULD HAVE: export, restore, undo, keyboard.
    Hooked at what every app shares - localStorage and document - not at each app's internals,

@@ -95,6 +95,9 @@ A number you can check is worth more than a number you must trust — and it mak
 - **Change since the last entry** — for a returning patient the results panel states the difference from their previous saved entry (weight, BMI, waist, body fat) with the interval, matched on the patient name/ID.
 - **Readable in the consulting room** — three text sizes and a high-contrast mode, both remembered; `lang` follows the interface language so a screen reader pronounces Hindi and Gujarati.
 - **Keyboard-first entry** — Enter advances through the form and saves at the end; Alt+1…5 jump to age, height, weight, waist and activity; Ctrl/⌘+S saves, Ctrl/⌘+Enter saves and clears.
+- **Batch mode** — paste rows from a spreadsheet (patient, age, sex, height, weight, waist) and compute the whole list, then export it as CSV. Each row goes through the same form and the same functions as a single patient, so there is no second implementation to drift, and your own entries are left untouched.
+- **Encrypted export** — AES-256-GCM with a passphrase (PBKDF2-SHA-256, 150 000 iterations, fresh salt and IV), using the browser's own `crypto.subtle`. A CSV on a shared laptop is a plain list of patients; this is not.
+- **A sealed log** — every saved entry carries the SHA-256 of the one before it, and "Verify log" names the first entry that no longer matches. It detects an edit, not an attacker holding the whole file.
 - **Fully offline** — self-contained, no external requests; install it, or add it to a home screen on mobile.
 
 ## Usage
@@ -118,6 +121,9 @@ A number you can check is worth more than a number you must trust — and it mak
 | `scripts/badges.py` | Draws the badges. Run it after a change that alters a claim. |
 | `scripts/make_icons.py` | Draws the app icon at every size, including the one the release pipeline stamps into the EXE and APK. |
 | `scripts/shot.py` | Takes the screenshots with headless Chromium, over a throwaway local server. |
+| `scripts/release_notes.py` | Builds the release notes from the changelog section for the version in `package.json`. |
+| `.github/workflows/release-extras.yml` | After the build: `SHA256SUMS.txt`, the hand-carry `-web.zip`, and those notes, attached to the rolling release. |
+| `test/crypto.test.js` | The encryption and log checks, in their own process — a runtime without WebCrypto must not take the suite down. |
 | `ROADMAP.md` | Offline-only enhancements, ordered by clinical value. |
 | `LICENSE` | PolyForm Noncommercial licence. |
 
@@ -133,7 +139,7 @@ The build compresses but does not rename: the shipped file is the file a colleag
 
 ## Tests
 
-The app carries its own known-value self-tests — one per calculator, plus a units-consistency check. The suite adds 58 checks in total: the calculators, the working panel, the CSV writer, the manifest and its icons, the service-worker cache name, the text-size and contrast controls, the change-since-last-entry line, the printed note's header and the Enter-key flow. Open `index.html?selftest=1` and read the console, or run them headlessly:
+The app carries its own known-value self-tests — one per calculator, plus a units-consistency check. The suite is 74 checks in total: the calculators, the working panel, the CSV writer, the manifest and its icons, the service-worker cache name, the text-size and contrast controls, the change-since-last-entry line, the printed note's header, the Enter-key flow, batch mode and the limits panel. Eleven more live in `test/crypto.test.js` — the encrypted export round-trip, and the sealed log including that an edited record breaks the chain at the right entry. Those need `crypto.subtle`; where a runtime cannot start WebCrypto the suite prints `SKIP` and says so rather than pretending they passed. Open `index.html?selftest=1` and read the console, or run them headlessly:
 
 ```
 npm install
@@ -143,6 +149,14 @@ npm test
 `test/selftest.js` loads the built `index.html` in a headless DOM, runs the self-tests, and drives the calculator (creatinine clearance, the "Show the working" panel, dosing, CHA₂DS₂-VASc). `.github/workflows/test.yml` runs it on every push.
 
 ## Changelog
+
+**2.7.0 — 2026-11-01**
+- **Batch mode** — paste a list and compute it; every row goes through the same form and functions as a single patient, and your own entries are restored afterwards.
+- **Encrypted export and restore** — AES-256-GCM with PBKDF2-SHA-256 key derivation (150 000 iterations, fresh salt and IV) through the browser's own `crypto.subtle`.
+- **A sealed log** — each entry carries the SHA-256 of the one before it; "Verify log" names the first entry that no longer matches. It detects an edit, not an attacker who can rewrite the file — the limit is stated rather than implied.
+- **When these numbers do not apply** — a limits panel under the definitions, covering BMI, the body-fat estimate, Mifflin–St Jeor, Cockcroft–Gault, the dose arithmetic, CHA₂DS₂-VASc and the fluid baseline.
+- **Release extras** — `SHA256SUMS.txt` beside every asset, a hand-carry `-web.zip`, and release notes generated from this changelog. Done in this repository rather than in the shared kit, so no other app's build is touched.
+- The suite grew to 74 checks; the 11 crypto checks are skipped, and said to be skipped, on a runtime without WebCrypto.
 
 **2.6.0 — 2026-11-01**
 - **Installable.** A web app manifest and a service worker, so "Add to Home Screen" installs an app instead of a bookmark. The document is served network-first with the cache only as the offline fallback, assets cache-first with a background refresh, and the cache name is stamped from the version at build time — the failure this avoids is a shipped release that a returning reader never sees. A build stamp in the footer answers "am I on the new one?".

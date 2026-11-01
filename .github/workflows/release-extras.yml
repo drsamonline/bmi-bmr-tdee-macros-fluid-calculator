@@ -1,0 +1,95 @@
+# Release extras: checksums, a web bundle, and release notes that say something.
+#
+# The build itself lives in the shared app-builder kit, and a fix there reaches
+# every repository at once — which is right for the build and wrong for three
+# things that only this repository knows: which assets to describe, what the
+# changelog says about this version, and what belongs in a hand-carry zip.
+#
+# So this workflow waits for the build, then adds them to the same rolling
+# release. It never builds, never deploys, and never deletes anything.
+#
+# SPDX-FileCopyrightText: 2026 Dr Sohil Momin
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
+name: Release extras
+
+on:
+  workflow_run:
+    workflows: ["Build + deploy"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-extras
+  cancel-in-progress: true
+
+jobs:
+  extras:
+    name: Checksums, web bundle, notes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # a failed build leaves the previous release alone; do not decorate it
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262   # was @v4
+        with:
+          ref: main
+
+      - name: The release we are decorating
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! gh release view app-latest --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::notice::no app-latest release yet - nothing to decorate"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Checksums of what was published
+        if: env.SKIP != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APP: bmi-bmr-tdee-macros-fluid-calculator
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          # only the three built assets: not our own previous SHA256SUMS or zip
+          gh release download app-latest --repo "$GITHUB_REPOSITORY" --dir dist --clobber \
+            --pattern "${APP}-portable.exe" --pattern "${APP}.apk" --pattern "${APP}-linux"
+          ( cd dist && sha256sum "${APP}-portable.exe" "${APP}.apk" "${APP}-linux" > SHA256SUMS.txt )
+          cat dist/SHA256SUMS.txt
+
+      - name: A bundle that works from a USB stick
+        if: env.SKIP != '1'
+        run: |
+          set -euo pipefail
+          APP=bmi-bmr-tdee-macros-fluid-calculator
+          rm -rf web && mkdir -p web
+          cp index.html LICENSE README.md web/
+          cp docs/play/manifest.webmanifest docs/play/sw.js docs/play/icon.svg \
+             docs/play/icon-192.png docs/play/icon-512.png web/
+          ( cd web && zip -q -r "../dist/${APP}-web.zip" . )
+          unzip -l "dist/${APP}-web.zip"
+
+      - name: Release notes from the changelog
+        if: env.SKIP != '1'
+        run: |
+          set -euo pipefail
+          python3 scripts/release_notes.py > notes.md
+          head -20 notes.md
+
+      - name: Attach them to the release
+        if: env.SKIP != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APP: bmi-bmr-tdee-macros-fluid-calculator
+        run: |
+          set -euo pipefail
+          gh release upload app-latest --repo "$GITHUB_REPOSITORY" --clobber \
+            dist/SHA256SUMS.txt "dist/${APP}-web.zip"
+          gh release edit app-latest --repo "$GITHUB_REPOSITORY" --notes-file notes.md
+          echo "### Extras added to app-latest" >> "$GITHUB_STEP_SUMMARY"
+          cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"

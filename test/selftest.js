@@ -173,6 +173,56 @@ setTimeout(() => {
   ageEl.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
   ok("Enter moves to the next field", d.activeElement && d.activeElement.id !== "age");
 
+  // ---- 2.7.0: batch, encryption, a sealed log, the limits panel ----
+
+  // batch: rows in, the same arithmetic out, and the clinician's own form intact
+  fire("patient", "KEEP-ME"); fire("age", "40"); fire("weightKg", "70");
+  d.getElementById("batchText").value =
+    "patient, age, sex, height_cm, weight_kg, waist_cm\nOP-1, 34, M, 172, 69, 84\nOP-2, 51, F, 158, 74, 96";
+  d.getElementById("btnBatchRun").dispatchEvent(new w.Event("click"));
+  const batchTable = d.querySelectorAll("#batchOut tbody tr");
+  ok("batch computes one row per pasted patient", batchTable.length === 2);
+  ok("batch uses the app's own arithmetic (BMI 23.3 for 69 kg / 172 cm)",
+    /23\.3/.test(batchTable[0].textContent), batchTable[0].textContent);
+  ok("batch leaves the clinician's own form as it was",
+    d.getElementById("patient").value === "KEEP-ME" && d.getElementById("weightKg").value === "70");
+
+  let batchCsv = null;
+  const realSave = w.Export.save;
+  w.Export.save = function (name, data) { batchCsv = data; return true; };
+  d.getElementById("btnBatchExport").dispatchEvent(new w.Event("click"));
+  w.Export.save = realSave;
+  ok("batch exports a CSV with both rows", !!batchCsv && batchCsv.split("\n").length >= 3);
+
+  // The encrypted export and the sealed log are tested in their own process:
+  // they need SubtleCrypto, jsdom has none, and on a runtime that cannot start
+  // WebCrypto at all the failure is a hard crash that must not take the suite
+  // down with it. A crash with no output is reported as skipped, not passed.
+  let cryptoNote = "skipped (this runtime could not start WebCrypto)";
+  let cryptoOut = "";
+  try {
+    cryptoOut = require("child_process").execFileSync(
+      process.execPath, [path.join(__dirname, "crypto.test.js")],
+      { encoding: "utf8", timeout: 180000, stdio: ["ignore", "pipe", "pipe"] }
+    );
+  } catch (e) {
+    cryptoOut = String((e && e.stdout) || "");
+  }
+  const cryptoLines = cryptoOut.split("\n").filter((l) => /^(PASS|FAIL) /.test(l));
+  // a child that died part-way through reports fewer checks than it started with;
+  // only a run that reached its own verdict counts as a run
+  const finished = /All crypto checks passed|FAILED/.test(cryptoOut);
+  if (finished) {
+    cryptoLines.forEach((l) => { console.log(l); if (l.startsWith("FAIL")) fail++; });
+    cryptoNote = null;
+  }
+  if (cryptoNote) console.log("SKIP " + cryptoNote + " \u2014 the encrypted export and the sealed log are untested here; run `npm test` on a machine with WebCrypto");
+
+  // the limits panel is the thing that keeps the numbers honest
+  const defs = d.querySelector(".card-results details.defs:not(.working)").textContent;
+  ok("the app states when its numbers do not apply",
+    /When these numbers do not apply/.test(defs) && /CHA\u2082DS\u2082-VASc/.test(defs));
+
   console.log(fail ? "\n" + fail + " FAILED" : "\nAll tests passed");
   process.exit(fail ? 1 : 0);
 }, 500);

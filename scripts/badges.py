@@ -93,7 +93,7 @@ def main():
         ("offline", "offline", "no network", MOSS),
         ("deps", "runtime deps", "0", MOSS),
         ("file", "single file", app_size_kb(), SLATE),
-        ("tests", "tests", "58 passing", MOSS),
+        ("tests", "tests", "74 passing", MOSS),
         ("i18n", "i18n", "EN / HI / GU", AMBER),
         ("licence", "licence", "PolyForm NC 1.0.0", RUST),
         ("version", "version", app_version(), SLATE),

@@ -1,5 +1,34 @@
 # Changelog
 
+## 2.7.0 — 2026-11-01
+
+The rest of the roadmap: batch work, encryption, a log that can be checked, and
+the limits written down where the numbers are.
+
+- **Batch mode.** Paste rows from a spreadsheet (comma or tab separated) and the app
+  computes the whole list. Each row is typed into the same form the clinician uses, so
+  the arithmetic is the app's own and there is no second implementation to drift; the
+  form is put back exactly as it was afterwards. Export the results as CSV. This is the
+  screening-camp shape of the work.
+- **Encrypted export and restore.** AES-256-GCM with a key derived from a passphrase by
+  PBKDF2-SHA-256 (150 000 iterations, random salt and IV per export), using the
+  browser's own `crypto.subtle` — still no dependency and still no network. A CSV on a
+  shared laptop is a plain list of patients; this is not.
+- **A sealed log.** Each saved entry carries the SHA-256 of the entry before it, so a
+  record cannot be edited or removed on its own without the chain failing at that point.
+  "Verify log" recomputes the chain and names the entry that does not match. The honest
+  limit is stated in the README: it detects an edit, not an attacker who can rewrite the
+  whole file.
+- **When these numbers do not apply.** A limits panel under the definitions: where BMI,
+  the Deurenberg body-fat estimate, Mifflin-St Jeor, Cockcroft-Gault, the dose arithmetic,
+  CHA2DS2-VASc and the fluid baseline stop being true.
+- **Release extras**, in this repository rather than the shared kit: a `SHA256SUMS.txt`
+  beside every asset, a hand-carry `-web.zip` (index.html, manifest, worker, icons) for a
+  machine with no installer rights, and release notes generated from this changelog
+  instead of one line about a commit SHA.
+- The suite is 74 checks; the 11 crypto checks run where WebCrypto exists and are
+  reported as skipped where it does not.
+
 ## 2.6.0 — 2026-11-01
 
 The roadmap's app-level items, applied. Everything below is offline, has no

@@ -6,6 +6,37 @@ vendored file committed to this repository — otherwise it is not on this list.
 
 Ordered by what a clinician would notice first, not by effort.
 
+## Status
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | A real manifest and service worker | **shipped 2.6.0** |
+| 2 | A printable clinical note | **shipped 2.6.0** |
+| 3 | Visit-to-visit deltas | **shipped 2.6.0** |
+| 8 | Rounding, stated | **shipped 2.6.0** |
+| 9 | Fast OPD entry | **shipped 2.6.0** |
+| 10 | Readable in the consulting room | **shipped 2.6.0** |
+| 4 | Batch mode | **shipped 2.7.0** |
+| 5 | Encrypted case export | **shipped 2.7.0** |
+| 6 | Tamper-evident local log | **shipped 2.7.0** |
+| 11 | Offline help and the limits | **shipped 2.7.0** (limits panel; the FAQ panel is still English-only) |
+| 12 | Verify what you downloaded | **shipped** — `SHA256SUMS.txt` per release |
+| 13 | A hand-carry bundle | **shipped** — `-web.zip` per release |
+| 14 | Release notes that say what changed | **shipped** — generated from this changelog |
+| 7 | Paediatric growth references | **not shipped — see below** |
+
+Items 12–14 are done in this repository (`.github/workflows/release-extras.yml`)
+rather than in the shared `app-builder` kit, so no other app's build is touched.
+
+### 7. Paediatric growth references — why it is still open
+
+A paediatric mode needs the WHO 0–5 and 5–19 LMS tables committed as a local
+data file, with z-scores computed in the app: no network, no dependency, but
+real reference data that has to be transcribed and checked. Guessing it, or
+generating it, would put wrong centiles in front of a child. It needs the
+tables sourced from WHO, a written review of the transcription, and its own
+release. The app's adult-only guard stays until then.
+
 ## 1. Make "Add to Home Screen" real
 
 The app carries `apple-mobile-web-app-capable` but no manifest, so a phone gets
