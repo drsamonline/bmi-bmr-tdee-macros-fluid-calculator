@@ -13,6 +13,8 @@
 <meta name="apple-mobile-web-app-title" content="HealthCalc">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Cpath d='M32 18v28M18 32h28' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%230f766e'/%3E%3Cpath d='M90 48v84M48 90h84' stroke='white' stroke-width='18' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="color-scheme" content="dark light">
 <style>
 :root{
   --bg:#0b1220; --card:#131c2e; --card2:#0e1729; --border:#24304a;
@@ -169,13 +171,24 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
 
 @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
 @media print{
-  body{background:#fff; color:#000;}
+  body{background:#fff; color:#000; zoom:1 !important;}
   .bottom-bar,.controls,#toast,details.adv,.disclaimer,.filter,.entry-btn,.ico-btn,.res-actions,.trend-wrap{display:none !important;}
   .card{box-shadow:none; border-color:#bbb; break-inside:avoid; margin-bottom:12px;}
   .app{max-width:100%; padding:0;}
   main{display:block !important;}
   .card-results{position:static !important;}
   .stat .val{color:#000;}
+  /* a clinical note, not a print of the dashboard */
+  .print-head{display:block; border-bottom:2px solid #000; padding-bottom:7px; margin-bottom:12px;}
+  .print-head .ph-t{font-size:15px; font-weight:700;}
+  .print-head .ph-v{font-size:11px; margin-top:4px; line-height:1.5;}
+  .print-sign{display:block; margin-top:20px; padding-top:8px; border-top:1px solid #000; font-size:10.5px;}
+  .card-saved,.refs,.delta-row{display:none !important;}
+  .results{grid-template-columns:repeat(3,1fr) !important;}
+  .section-title{margin-top:10px !important;}
+  .working-list li{font-size:10.5px; break-inside:avoid;}
+  .card-results{max-height:none !important; overflow:visible !important;}
+  .gauge-scale span{color:#000;}
 }
 
 /* ---------- show the working ---------- */
@@ -184,10 +197,54 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
 .working-list li b{display:block;font-weight:600}
 .working-list li span{color:var(--muted, #9aa3b2);font-variant-numeric:tabular-nums}
 .working-list .wk-note{font-size:12px;color:var(--muted, #9aa3b2);margin:8px 0 0}
+
+/* ---------- text size, contrast, deltas, the printed note ---------- */
+html[data-textsize="lg"] body{zoom:1.12}
+html[data-textsize="xl"] body{zoom:1.25}
+html[data-contrast="high"]{
+  --bg:#000; --card:#0a0d12; --card2:#11161d; --border:#8fa0bb; --text:#ffffff;
+  --muted:#dde5f1; --accent:#2dd4bf; --accent-ink:#00120f; --shadow:none;
+}
+html[data-contrast="high"][data-theme="light"]{
+  --bg:#ffffff; --card:#ffffff; --card2:#ffffff; --border:#1b1b1b; --text:#000000;
+  --muted:#2b2b2b; --accent:#0b6b62; --accent-ink:#ffffff; --shadow:none;
+}
+.delta-row{
+  display:none; margin:0 0 10px; padding:8px 10px; border-radius:8px; font-size:12px; line-height:1.55;
+  background:color-mix(in srgb,var(--accent) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
+}
+.delta-row.show{display:block}
+.delta-row b{font-variant-numeric:tabular-nums}
+.delta-row .dh{display:block; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px}
+.print-head,.print-sign{display:none}
+.build-stamp{display:inline-block; margin-top:4px; font-size:11px; color:var(--muted)}
+/* the data toolbar is fixed bottom-left and covered the Export button;
+   lift it clear of the action bar */
+#__tools{bottom:124px !important;}
+
+/* print, restated after the base rule that hides these blocks on screen:
+   a later declaration of equal specificity wins regardless of the media query */
+@media print{
+  .print-head{display:block !important;}
+  .print-sign{display:block !important;}
+  header .top,header{display:none !important;}
+  #__tools,#__keysHelp{display:none !important;}
+  .card-results details.defs:not(.working){display:none !important;}
+  .card-inputs{display:none !important;}
+  /* the results card is taller than a page: let it flow, or the whole
+     card jumps to page 2 and page 1 is a header on an empty sheet */
+  .card-results{break-inside:auto !important;}
+  .disclaimer{display:block !important; font-size:10px;}
+}
 </style>
 </head>
 <body>
 <div class="app">
+  <div class="print-head" id="printHead" aria-hidden="true">
+    <div class="ph-t">Clinical Health Calculator</div>
+    <div class="ph-v" id="printMeta"></div>
+  </div>
   <header>
     <div class="top">
       <div>
@@ -196,6 +253,8 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
         <div class="author" data-i18n="author">Developed by Dr. Sohil Momin, BHMS</div>
       </div>
       <div class="controls">
+        <button class="ico-btn" id="btnText" type="button" aria-label="Text size" title="Text size">A</button>
+        <button class="ico-btn" id="btnContrast" type="button" aria-label="High contrast" title="High contrast">◑</button>
         <button class="ico-btn" id="btnTheme" type="button" aria-label="Toggle theme" title="Theme">&#9788;</button>
         <button class="ico-btn" id="btnLang" type="button" aria-label="Change language" title="Language">EN</button>
       </div>
@@ -413,6 +472,7 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
           <button class="ico-btn" id="btnShare" type="button" data-i18n="share">Share</button>
         </div>
       </div>
+      <div class="delta-row" id="deltaRow" aria-live="polite"></div>
       <div class="results" id="resultsGrid" aria-live="polite" aria-atomic="false">
         <div class="section-title" data-i18n="secBody">Body composition</div>
         <div class="stat wide">
@@ -479,6 +539,7 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
           <dt>Fluid</dt><dd>30 mL/kg/day baseline, adjusted for climate, exercise, fever and breastfeeding.</dd>
         </dl>
       </details>
+      <div class="print-sign">Clinician: ______________________________&nbsp;&nbsp;Date: ________________&nbsp;&nbsp;Signature: ______________________________</div>
       <div class="hint" style="margin-top:8px;" data-i18n="footnote">Protein scales 0.8-2.0 g/kg by activity (DRI/ACSM). Fluid uses a 30 mL/kg baseline adjusted for climate, exercise and clinical flags. Always apply clinical judgement for renal, cardiac and paediatric patients.</div>
     </section>
 
@@ -497,7 +558,7 @@ details.adv>summary{cursor:pointer; font-size:13px; font-weight:600; color:var(-
 
   <div class="footer-credit">
     <span data-i18n="privacy">All data stays on this device. Nothing is uploaded.</span><br>
-    Clinical Health Calculator v<span id="ver"></span> &copy; <span id="yearNow"></span> &mdash; <strong>Dr. Sohil Momin</strong>
+    Clinical Health Calculator v<span id="ver"></span> &copy; <span id="yearNow"></span> &mdash; <strong>Dr. Sohil Momin</strong><br><span class="build-stamp" id="buildStamp"></span>
   </div>
   <details class="refs">
     <summary data-i18n="references">References &amp; formulas</summary>
@@ -917,11 +978,16 @@ df.fromCSV = function (text) {
 (function(){
 "use strict";
 
-var VERSION = "2.1.0";
+var VERSION = "2.6.0";
 var STORAGE_KEY = "chc_entries_v2";
 var THEME_KEY = "chc_theme";
 var LANG_KEY = "chc_lang";
 var MAX_ENTRIES = 500;
+var TEXT_KEY = "chc_textsize";
+var CONTRAST_KEY = "chc_contrast";
+/* Stamped into the footer and into the service-worker cache name, so "am I
+   on the new one?" is answerable from the page itself. */
+var BUILD = "2026-11-01";
 var KCAL_PER_KG = 7700;
 
 var $ = function(id){ return document.getElementById(id); };
@@ -929,6 +995,10 @@ var $ = function(id){ return document.getElementById(id); };
 /* ---------------- i18n ---------------- */
 var I18N = {
   en: {
+    roundNote:"Rounded half-up: BMI, body fat and grams to 1 decimal; kcal and mL to whole numbers; ratios to 2 decimals.",
+    deltaLabel:"Change since last entry",
+    textSize:"Text size",
+    contrast:"High contrast",
     secRisk:"Risk",
     chadsOut:"CHA\u2082DS\u2082-VASc score",
     chadsFlags:"Stroke-risk flags (CHA\u2082DS\u2082-VASc)",
@@ -988,6 +1058,10 @@ var I18N = {
     trend:"Change since first entry", unitCm:"cm", unitKg:"kg"
   },
   hi: {
+    roundNote:"\u0930\u093e\u0909\u0902\u0921\u0947\u0921 \u0939\u093e\u092b-\u0905\u092a: BMI, \u092c\u0949\u0921\u0940 \u092b\u0948\u091f \u0914\u0930 \u0917\u094d\u0930\u093e\u092e\u094d\u0938 \u0915\u094b 1 \u0921\u0947\u0938\u093f\u092e\u0932 \u0924\u0915; kcal \u0914\u0930 mL \u0915\u094b \u092a\u0942\u0930\u094d\u0923 \u0938\u0902\u0916\u094d\u092f\u093e\u0913\u0902 \u092e\u0947\u0902; \u0930\u0947\u0936\u093f\u092f\u094b \u0915\u094b 2 \u0921\u0947\u0938\u093f\u092e\u0932 \u0924\u0915\u0964",
+    deltaLabel:"\u092a\u093f\u091b\u0932\u0940 \u090f\u0902\u091f\u094d\u0930\u0940 \u0915\u0947 \u092c\u093e\u0926 \u0938\u0947 \u092c\u0926\u0932\u093e\u0935",
+    textSize:"\u091f\u0947\u0915\u094d\u0938\u094d\u091f \u0938\u093e\u0907\u091c\u093c",
+    contrast:"\u0939\u093e\u0908 \u0915\u0902\u091f\u094d\u0930\u093e\u0938\u094d\u091f",
     secRisk:"\u091c\u094b\u0916\u093f\u092e",
     chadsOut:"CHA\u2082DS\u2082-VASc \u0938\u094d\u0915\u094b\u0930",
     chadsFlags:"\u0938\u094d\u091f\u094d\u0930\u094b\u0915-\u091c\u094b\u0916\u093f\u092e \u0938\u0902\u0915\u0947\u0924 (CHA\u2082DS\u2082-VASc)",
@@ -1044,6 +1118,10 @@ var I18N = {
     trend:"\u092a\u0939\u0932\u0940 \u092a\u094d\u0930\u0935\u093f\u0937\u094d\u091f\u093f \u0938\u0947 \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928", unitCm:"cm", unitKg:"kg"
   },
   gu: {
+    roundNote:"\u0ab0\u0abe\u0a89\u0aa8\u0acd\u0aa1\u0ac7\u0aa1 \u0ab9\u0abe\u0aab-\u0a85\u0aaa: BMI, \u0aac\u0acb\u0aa1\u0ac0 \u0aab\u0ac7\u0a9f \u0a85\u0aa8\u0ac7 \u0a97\u0acd\u0ab0\u0abe\u0aae\u0acd\u0ab8\u0aa8\u0ac7 1 \u0aa6\u0ab6\u0abe\u0a82\u0ab6 \u0ab8\u0ac1\u0aa7\u0ac0; kcal \u0a85\u0aa8\u0ac7 mL \u0aa8\u0ac7 \u0aaa\u0ac2\u0ab0\u0acd\u0aa3 \u0ab8\u0a82\u0a96\u0acd\u0aaf\u0abe\u0a93 \u0ab8\u0ac1\u0aa7\u0ac0; \u0ab0\u0ac7\u0ab6\u0abf\u0aaf\u0acb\u0aa8\u0ac7 2 \u0aa6\u0ab6\u0abe\u0a82\u0ab6 \u0ab8\u0ac1\u0aa7\u0ac0.",
+    deltaLabel:"\u0a9b\u0ac7\u0ab2\u0acd\u0ab2\u0ac0 \u0a8f\u0aa8\u0acd\u0a9f\u0acd\u0ab0\u0ac0 \u0aaa\u0a9b\u0ac0\u0aa8\u0acb \u0aab\u0ac7\u0ab0\u0aab\u0abe\u0ab0",
+    textSize:"\u0a9f\u0ac7\u0a95\u0acd\u0ab8\u0acd\u0a9f \u0ab8\u0abe\u0a88\u0a9d",
+    contrast:"\u0ab9\u0abe\u0a88 \u0a95\u0acb\u0aa8\u0acd\u0a9f\u0acd\u0ab0\u0abe\u0ab8\u0acd\u0a9f",
     secRisk:"\u0a9c\u0acb\u0a96\u0aae",
     chadsOut:"CHA\u2082DS\u2082-VASc \u0ab8\u0acd\u0a95\u0acb\u0ab0",
     chadsFlags:"\u0ab8\u0acd\u0a9f\u0acd\u0ab0\u0acb\u0a95-\u0a9c\u0acb\u0a96\u0aae \u0ab8\u0a82\u0a95\u0ac7\u0aa4 (CHA\u2082DS\u2082-VASc)",
@@ -1131,7 +1209,7 @@ var state = { gender:"M", heightUnit:"cm", weightUnit:"kg", proteinBasis:"total"
 var el = {};
 ["age","patient","heightCm","heightM","heightFt","heightIn","weightKg","weightLbs","waist","hip","activity","fatRatio","climate","exercise","fever","breastfeeding","renal","heart","athlete",
  "rBmi","rBmiCat","rBf","rLbm","rWhtr","rWhr","rBsa","rIbw","rAbw","rIdealRange","rTarget","rBmr","rTdee","rTargets","rChange","rProtein","rFat","rCarbs","rFiber","rProteinMeal","rMacroPct","rFluid","creat","rCrcl","doseKg","doseM2","rDoseKg","rDoseM2","rChads","chf","htn","dm","stroke","vascular","working",
- "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput"].forEach(function(id){ el[id]=$(id); });
+ "savedList","emptyMsg","filter","trendWrap","trend","caution","gauge","gaugeScale","toast","ver","yearNow","btnClearAll","btnCopy","btnShare","fileInput","deltaRow","printMeta","printHead","buildStamp","btnText","btnContrast"].forEach(function(id){ el[id]=$(id); });
 
 el.ver.textContent = VERSION;
 el.yearNow.textContent = new Date().getFullYear();
@@ -1408,7 +1486,7 @@ function calculate(){
   if(bmi > 70) cautions.push(t("bmiHigh"));
   renderCaution(cautions);
 
-  return {
+  var out = {
     ts: Date.now(), patient: el.patient.value.trim(), age: age, gender: state.gender,
     heightCm: r1(heightCm), weightKg: r1(weightKg), waistCm: waistCm > 0 ? r1(waistCm) : "",
     activity: activityKey, bmi: r1(bmi), bmiCat: t(cat.key),
@@ -1419,6 +1497,9 @@ function calculate(){
     idealLo: r1(idealLo), idealHi: r1(idealHi), target: r1(targetWt), kgToGo: r1(kgToGo),
     proteinMeal: r1(protein/3), macroPct: Math.round(protein*4/tdee*100) + "/" + Math.round(fat*9/tdee*100) + "/" + Math.round(carbs*4/tdee*100)
   };
+  renderDelta(out);
+  renderPrintHead(out);
+  return out;
 }
 /* ---------------- show the working ---------------- */
 /* Every result, with its formula and the values substituted, so the number can
@@ -1460,7 +1541,8 @@ function renderWorking(v){
   for(var i=0;i<rows.length;i++){
     h += '<li><b>' + rows[i].n + ' = ' + rows[i].r + '</b><span>' + rows[i].f + ' = ' + rows[i].s + '</span></li>';
   }
-  box.innerHTML = h + '</ul><p class="wk-note">' + t("workingNote") + '</p>';
+  box.innerHTML = h + '</ul><p class="wk-note">' + t("workingNote") + '</p>' +
+    '<p class="wk-note">' + t("roundNote") + '</p>';
 }
 
 function renderCaution(list){
@@ -1690,6 +1772,76 @@ function importCsv(text){
   toast(added + " " + t("importedMsg"));
 }
 
+/* ---------------- change since the last entry ---------------- */
+/* A follow-up tool, not a calculator: the same patient, measured twice, is
+   what a consultation is actually about. Matched on the patient name/ID; with
+   no ID, against the most recent entry of any patient. Nothing leaves the
+   device - it reads the entries already in localStorage. */
+function previousEntry(patient, ts){
+  if(!entries.length) return null;
+  var p = String(patient || "").toLowerCase().trim();
+  var pool = p
+    ? entries.filter(function(e){ return String(e.patient || "").toLowerCase().trim() === p; })
+    : entries.slice();
+  pool = pool.filter(function(e){ return e && e.ts && e.ts !== ts; });
+  if(!pool.length) return null;
+  pool.sort(function(a,b){ return (b.ts||0) - (a.ts||0); });
+  return pool[0];
+}
+function fmtInterval(ms){
+  var d = Math.round(ms / 86400000);
+  if(d < 1) return "today";
+  if(d < 14) return d + " d";
+  if(d < 70) return Math.round(d/7) + " wk";
+  return Math.round(d/30) + " mo";
+}
+function renderDelta(cur){
+  var box = el.deltaRow; if(!box) return;
+  var prev = previousEntry(cur.patient, cur.ts);
+  if(!prev){ box.classList.remove("show"); box.innerHTML = ""; return; }
+  function chg(a, b, unit, dec){
+    var x = num(a), y = num(b);
+    if(!isFinite(x) || !isFinite(y) || x === 0 || y === 0) return null;
+    var v = x - y, lim = dec ? 0.05 : 0.5;
+    if(Math.abs(v) < lim) return "no change";
+    return (v > 0 ? "+" : "\u2212") + Math.abs(v).toFixed(dec || 0) + (unit || "");
+  }
+  var bits = [];
+  var cw = chg(cur.weightKg, prev.weightKg, " kg", 1); if(cw) bits.push("weight " + cw);
+  var cb = chg(cur.bmi, prev.bmi, "", 1); if(cb) bits.push("BMI " + cb);
+  var cwa = chg(cur.waistCm, prev.waistCm, " cm", 1); if(cwa) bits.push("waist " + cwa);
+  var cf = chg(cur.bf, prev.bf, "%", 1); if(cf) bits.push("body fat " + cf);
+  if(!bits.length){ box.classList.remove("show"); box.innerHTML = ""; return; }
+  box.innerHTML = '<span class="dh">' + esc(t("deltaLabel")) + " \u00b7 " + fmtTs(prev.ts) +
+    " (" + fmtInterval(cur.ts - prev.ts) + ")</span>" + esc(bits.join(" \u00b7 "));
+  box.classList.add("show");
+}
+
+/* ---------------- the printed note's header ---------------- */
+function renderPrintHead(d){
+  if(!el.printMeta) return;
+  var bits = [];
+  if(d.patient) bits.push("Patient: " + d.patient);
+  bits.push("Age " + d.age + " \u00b7 " + (d.gender === "M" ? "Male" : "Female"));
+  bits.push(d.heightCm + " cm \u00b7 " + d.weightKg + " kg" + (d.waistCm ? " \u00b7 waist " + d.waistCm + " cm" : ""));
+  bits.push("BMI " + d.bmi + " (" + d.bmiCat + ")");
+  bits.push(fmtTs(d.ts));
+  el.printMeta.textContent = bits.join("  \u00b7  ");
+}
+
+/* ---------------- readable in the consulting room ---------------- */
+function applyTextSize(size){
+  document.documentElement.setAttribute("data-textsize", size);
+  if(el.btnText) el.btnText.textContent = size === "md" ? "A" : (size === "lg" ? "A+" : "A++");
+  try{ localStorage.setItem(TEXT_KEY, size); }catch(e){}
+}
+function applyContrast(on){
+  if(on) document.documentElement.setAttribute("data-contrast", "high");
+  else document.documentElement.removeAttribute("data-contrast");
+  if(el.btnContrast) el.btnContrast.setAttribute("aria-pressed", on ? "true" : "false");
+  try{ localStorage.setItem(CONTRAST_KEY, on ? "high" : "normal"); }catch(e){}
+}
+
 /* ---------------- toast ---------------- */
 var toastTimer = null;
 function toast(msg, actionLabel, action){
@@ -1757,6 +1909,49 @@ el.btnClearAll.addEventListener("click", function(){
   entries = []; persist(); renderSaved();
   toast(t("clearedMsg"), t("undo"), function(){ entries = backup; persist(); renderSaved(); });
 });
+$("btnText").addEventListener("click", function(){
+  var order = ["md","lg","xl"];
+  var cur = document.documentElement.getAttribute("data-textsize") || "md";
+  applyTextSize(order[(order.indexOf(cur) + 1) % order.length]);
+});
+$("btnContrast").addEventListener("click", function(){
+  applyContrast(document.documentElement.getAttribute("data-contrast") !== "high");
+});
+/* Enter advances through the form instead of submitting nothing; the last field
+   saves and clears, which is the OPD rhythm: type, type, type, next patient. */
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Enter" || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+  var t = e.target;
+  if(!t || (t.tagName !== "INPUT" && t.tagName !== "SELECT")) return;
+  if(t.type === "file") return;
+  e.preventDefault();
+  var fields = document.querySelectorAll(".card-inputs input, .card-inputs select");
+  var list = Array.prototype.filter.call(fields, function(f){
+    return !f.disabled && f.type !== "file" && !(f.closest && f.closest(".hidden"));
+  });
+  var i = list.indexOf(t);
+  if(i < 0) return;                     /* not one of ours: leave the key alone */
+  if(i < list.length - 1){
+    list[i+1].focus();
+    if(list[i+1].select){ try{ list[i+1].select(); }catch(err){} }
+  } else { saveEntry(true); }
+});
+/* Alt+1..5 jumps to a field without leaving the keyboard. */
+document.addEventListener("keydown", function(e){
+  if(!e.altKey || e.ctrlKey || e.metaKey) return;
+  var map = {"1":"age","2":"heightCm","3":"weightKg","4":"waist","5":"activity"};
+  var id = map[e.key];
+  if(!id || !el[id]) return;
+  e.preventDefault();
+  el[id].focus();
+  if(el[id].select){ try{ el[id].select(); }catch(err){} }
+});
+/* Print the working, not just the numbers: the panel is closed by default. */
+window.addEventListener("beforeprint", function(){
+  var w = document.querySelector("details.working");
+  if(w) w.open = true;
+});
+
 $("btnTheme").addEventListener("click", function(){
   var cur = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
   applyTheme(cur);
@@ -1779,11 +1974,24 @@ function init(){
   try{ theme = localStorage.getItem(THEME_KEY); savedLang = localStorage.getItem(LANG_KEY); }catch(e){}
   if(!theme) theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   applyTheme(theme);
+  var ts = "md", ct = false;
+  try{ ts = localStorage.getItem(TEXT_KEY) || "md"; ct = localStorage.getItem(CONTRAST_KEY) === "high"; }catch(e){}
+  applyTextSize(ts);
+  applyContrast(ct);
   if(savedLang && I18N[savedLang]) lang = savedLang;
   loadEntries();
   showHeightWraps(); showWeightWraps();
   applyLang();
   calculate();
+  if(el.buildStamp) el.buildStamp.textContent = "build " + BUILD + " \u00b7 offline \u00b7 no accounts";
+  /* The worker is what makes it an installed app rather than a bookmark. It is
+     registered only where a service worker can exist: a file:// page or the
+     portable EXE has no origin to scope it to. */
+  if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+    navigator.serviceWorker.register("sw.js", { scope: "./" }).then(function(reg){
+      if(reg && reg.update) reg.update();
+    }).catch(function(){ /* offline still works; the worker is an upgrade */ });
+  }
 }
 init();
 

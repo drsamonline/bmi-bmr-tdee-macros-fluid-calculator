@@ -40,6 +40,9 @@ SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="
 """
 
 SIZES = [("icon-512.png", 512), ("icon-192.png", 192), ("icon-180.png", 180)]
+# the manifest and the service-worker shell live in docs/play, so the two
+# launcher sizes have to exist there as well as in docs/assets
+PLAY_SIZES = [("icon-512.png", 512), ("icon-192.png", 192)]
 ICO = [16, 24, 32, 48, 64, 128, 256]
 
 
@@ -90,6 +93,11 @@ def main():
     img = Image.open(master).convert("RGBA")
     for name, px in SIZES:
         out = os.path.join(ASSETS, name)
+        img.resize((px, px), Image.LANCZOS).save(out)
+        print("wrote", os.path.relpath(out, ROOT))
+
+    for name, px in PLAY_SIZES:
+        out = os.path.join(PLAY, name)
         img.resize((px, px), Image.LANCZOS).save(out)
         print("wrote", os.path.relpath(out, ROOT))
 

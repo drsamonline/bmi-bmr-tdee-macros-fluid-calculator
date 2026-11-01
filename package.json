@@ -1,12 +1,14 @@
 {
   "name": "clinical-health-calculator",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "private": true,
-  "description": "Headless tests for the single-file Clinical Health Calculator (BMI, BMR, TDEE, macros, fluids, creatinine clearance, dosing, CHA2DS2-VASc).",
+  "description": "Build and headless tests for the single-file Clinical Health Calculator (BMI, BMR, TDEE, macros, fluids, creatinine clearance, dosing, CHA2DS2-VASc).",
   "scripts": {
+    "build": "node scripts/build.js",
     "test": "node test/selftest.js"
   },
   "devDependencies": {
+    "html-minifier-terser": "^7.2.0",
     "jsdom": "^29.0.0"
   }
 }

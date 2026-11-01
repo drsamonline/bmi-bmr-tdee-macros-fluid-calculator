@@ -101,6 +101,78 @@ setTimeout(() => {
   ok("the CSV keeps its BOM and its header",
     String(csvText).charAt(0) === "\ufeff" && String(csvText).indexOf("Timestamp,Patient") > 0);
 
+  // ---- 2.6.0: the app as an installed, printable, follow-up instrument ----
+
+  // a manifest is what turns a bookmark into an app; the icons have to exist
+  // inside docs/play because that is the whole of what the EXE and APK bundle
+  const root = path.join(__dirname, "..");
+  const playDir = path.join(root, "docs", "play");
+  const manifestPath = path.join(playDir, "manifest.webmanifest");
+  ok("the page links its manifest",
+    /<link rel="?manifest"? href="?manifest\.webmanifest"?>/.test(html));
+  let manifest = null;
+  try { manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8")); } catch (e) { manifest = null; }
+  ok("the manifest parses", !!manifest);
+  ok("the manifest is standalone with a start_url",
+    !!manifest && manifest.display === "standalone" && manifest.start_url === "./");
+  ok("every manifest icon is a file in the app folder",
+    !!manifest && manifest.icons.length >= 3 &&
+    manifest.icons.every((i) => fs.existsSync(path.join(playDir, i.src))));
+
+  // the worker is the one thing that can serve a stale build forever, so its
+  // cache name must move with the version
+  const sw = fs.readFileSync(path.join(playDir, "sw.js"), "utf8");
+  const versions = [...html.matchAll(/var VERSION\s*=\s*"([\d.]+)";/g)];
+  const version = versions.length ? versions[versions.length - 1][1] : "";
+  ok("the service worker exists and is version-stamped",
+    /const CACHE = "chc-/.test(sw) && sw.indexOf("chc-" + version + "-") > 0, version);
+  ok("the worker serves the document network-first",
+    /wantsDocument[\s\S]*?fetch\(req\)/.test(sw));
+
+  // reading in a consulting room
+  const htmlEl = d.documentElement;
+  const click = (id) => d.getElementById(id).dispatchEvent(new w.Event("click"));
+  ok("text size starts at the base step", htmlEl.getAttribute("data-textsize") === "md");
+  click("btnText");
+  ok("the text-size button steps up", htmlEl.getAttribute("data-textsize") === "lg");
+  click("btnText"); click("btnText");
+  ok("and cycles back round", htmlEl.getAttribute("data-textsize") === "md");
+  click("btnContrast");
+  ok("the contrast button turns high contrast on",
+    htmlEl.getAttribute("data-contrast") === "high");
+  click("btnContrast");
+  ok("and off again", !htmlEl.getAttribute("data-contrast"));
+
+  // a follow-up tool: the change since the same patient's last entry
+  fire("patient", "FOLLOW-UP-1");
+  fire("age", "40"); fire("heightCm", "175"); fire("weightKg", "70");
+  d.getElementById("btnSave").dispatchEvent(new w.Event("click"));
+  fire("weightKg", "68");
+  const delta = d.getElementById("deltaRow");
+  ok("a saved patient gets a change-since-last line", delta.classList.contains("show"));
+  ok("the change is the difference in weight, signed",
+    /weight \u22122\.0 kg/.test(delta.textContent), delta.textContent);
+  fire("patient", "NO-HISTORY-9"); fire("weightKg", "70");
+  ok("an unknown patient gets no delta line",
+    !d.getElementById("deltaRow").classList.contains("show"));
+
+  // the printed sheet carries a header, because a note without a name is paper
+  ok("the print header names the patient and the date",
+    /NO-HISTORY-9/.test(d.getElementById("printMeta").textContent) &&
+    /\d{4}-\d{2}-\d{2}/.test(d.getElementById("printMeta").textContent));
+  ok("the build stamp is printed in the footer",
+    /build \d{4}-\d{2}-\d{2}/.test(d.getElementById("buildStamp").textContent));
+
+  // the working panel says how it rounded, so a printed figure can be checked
+  ok("the working panel states its rounding rule",
+    /Rounded half-up/.test(d.getElementById("working").textContent));
+
+  // Enter walks the form rather than doing nothing
+  const ageEl = d.getElementById("age");
+  ageEl.focus();
+  ageEl.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+  ok("Enter moves to the next field", d.activeElement && d.activeElement.id !== "age");
+
   console.log(fail ? "\n" + fail + " FAILED" : "\nAll tests passed");
   process.exit(fail ? 1 : 0);
 }, 500);
