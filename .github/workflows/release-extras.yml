@@ -14,6 +14,11 @@
 name: Release extras
 
 on:
+  # The build ends by editing the rolling release's notes, so that edit is the
+  # reliable "the assets are in place" signal. `workflow_run` was tried first and
+  # did not fire for this repository.
+  release:
+    types: [edited, published]
   workflow_run:
     workflows: ["Build + deploy"]
     types: [completed]
@@ -31,8 +36,15 @@ jobs:
     name: Checksums, web bundle, notes
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # a failed build leaves the previous release alone; do not decorate it
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    # A failed build leaves the previous release alone; do not decorate it. And
+    # do not re-decorate: our own notes mention SHA256SUMS.txt, so a run that
+    # finds it already there is a run triggered by our own edit - skip it rather
+    # than loop.
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'release' && github.event.release.tag_name == 'app-latest' &&
+       !contains(github.event.release.body || '', 'SHA256SUMS.txt'))
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262   # was @v4
         with:
