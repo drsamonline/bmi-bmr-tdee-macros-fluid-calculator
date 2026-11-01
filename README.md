@@ -115,7 +115,7 @@ A number you can check is worth more than a number you must trust — and it mak
 | `index.html` | Production build — the minified single-file app. |
 | `src/clinical-health-calculator.html` | The same app, un-minified and commented, for editing. |
 | `docs/index.html` | The landing page — this project's own design, not a copy of the app. |
-| `docs/play/` | The app as GitHub Pages serves it, plus its `icon.svg` / `icon.png`. |
+| `docs/play/` | The app as GitHub Pages serves it: the build, the manifest, the worker and its icons. |
 | `docs/assets/` | Generated: badges, app icons, platform glyphs, screenshots, social card. |
 | `scripts/build.js` | Minifies `src/` into `index.html` and `docs/play/index.html`, and stamps the service worker's cache name from the app version. `npm run build`. |
 | `docs/play/manifest.webmanifest` | The install manifest: standalone, `start_url`, icons that live inside the app folder because that is all the EXE and APK bundle. |
@@ -127,6 +127,7 @@ A number you can check is worth more than a number you must trust — and it mak
 | `.github/workflows/release-extras.yml` | After the build: `SHA256SUMS.txt`, the hand-carry `-web.zip`, and those notes, attached to the rolling release. |
 | `test/crypto.test.js` | The encryption and log checks, in their own process — a runtime without WebCrypto must not take the suite down. |
 | `ROADMAP.md` | Offline-only enhancements, ordered by clinical value. |
+| `export-kit.js` | The shared export kit (CSV writer and download helper), inlined into the source above. |
 | `LICENSE` | PolyForm Noncommercial licence. |
 
 To rebuild after editing the source:
