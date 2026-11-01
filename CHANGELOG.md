@@ -1,5 +1,35 @@
 # Changelog
 
+## 2.6.0 — 2026-11-01
+
+The roadmap's app-level items, applied. Everything below is offline, has no
+runtime dependency, and is guarded by the suite.
+
+- **Installable, not bookmarkable.** `docs/play/manifest.webmanifest` and
+  `docs/play/sw.js`: standalone display, icons inside the app folder (that is all the
+  EXE and APK bundle), the document served **network-first** with the cache only as the
+  offline fallback, assets cache-first with a background refresh, and `CACHE` stamped
+  from the app version by `scripts/build.js`. The failure this closes: a cache-first
+  worker with a frozen cache name serves the old build forever and the page cannot tell
+  you which one you are on. A build stamp in the footer now can.
+- **A printed clinical note.** The print stylesheet was a print of the dashboard. It now
+  emits a note: header with patient, age, sex, measurements, BMI and date; results in
+  three columns; the working underneath in small type; a signature line. The input form,
+  the saved list, the references and the data toolbar are not printed.
+- **Change since the last entry.** `renderDelta` compares the current values with the
+  same patient's most recent saved entry (weight, BMI, waist, body fat) and states the
+  interval. With no patient ID it compares against the last entry of any patient.
+- **Readable in the consulting room.** `data-textsize` (three steps) and
+  `data-contrast="high"`, both remembered under their own keys.
+- **Keyboard-first entry.** Enter walks the form and saves at the end; Alt+1…5 jump to a
+  field; the filter box is left alone.
+- **Rounding, stated.** The working panel says how each figure was rounded.
+- **The build is scripted.** `npm run build` minifies `src/` into `index.html` and
+  `docs/play/index.html` and stamps the worker's cache name. The pipeline's "the demo
+  must be the app" check now passes by construction. Compression without renaming: the
+  shipped file stays auditable.
+- Fixed: the data toolbar overlapped the action bar and covered Export CSV.
+
 ## 2.5.0 — 2026-11-01
 
 Repository presentation, and the release icons that were missing.
