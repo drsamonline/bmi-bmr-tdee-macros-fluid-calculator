@@ -1,12 +1,18 @@
 # Release extras: checksums, a web bundle, and release notes that say something.
 #
 # The build itself lives in the shared app-builder kit, and a fix there reaches
-# every repository at once — which is right for the build and wrong for three
-# things that only this repository knows: which assets to describe, what the
-# changelog says about this version, and what belongs in a hand-carry zip.
+# every repository at once — right for the build, wrong for the three things only
+# this repository knows: which assets to describe, what its changelog says about
+# this version, and what belongs in a hand-carry zip.
 #
-# So this workflow waits for the build, then adds them to the same rolling
-# release. It never builds, never deploys, and never deletes anything.
+# This workflow waits for the build of the same commit to finish, then adds them
+# to the same rolling release. It never builds, never deploys, never deletes.
+#
+# Why it waits instead of being triggered by the build: `workflow_run` did not
+# fire for this repository, and the release event cannot help either — the build
+# edits the release with the repository's own GITHUB_TOKEN, and GitHub suppresses
+# the events that token creates. Polling the run list is the one signal that
+# cannot be swallowed.
 #
 # SPDX-FileCopyrightText: 2026 Dr Sohil Momin
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
@@ -14,18 +20,13 @@
 name: Release extras
 
 on:
-  # The build ends by editing the rolling release's notes, so that edit is the
-  # reliable "the assets are in place" signal. `workflow_run` was tried first and
-  # did not fire for this repository.
-  release:
-    types: [edited, published]
-  workflow_run:
-    workflows: ["Build + deploy"]
-    types: [completed]
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: release-extras
@@ -35,22 +36,39 @@ jobs:
   extras:
     name: Checksums, web bundle, notes
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    # A failed build leaves the previous release alone; do not decorate it. And
-    # do not re-decorate: our own notes mention SHA256SUMS.txt, so a run that
-    # finds it already there is a run triggered by our own edit - skip it rather
-    # than loop.
-    if: |
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name == 'release' && github.event.release.tag_name == 'app-latest' &&
-       !contains(github.event.release.body || '', 'SHA256SUMS.txt'))
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262   # was @v4
-        with:
-          ref: main
+
+      - name: Wait for this commit's build
+        id: wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          for i in $(seq 1 60); do
+            read -r status conclusion sha <<<"$(gh run list --repo "$GITHUB_REPOSITORY" \
+              --workflow "Build + deploy" --limit 1 --json status,conclusion,headSha \
+              --jq '.[0] | "\(.status) \(.conclusion // "-") \(.headSha)"')"
+            if [ "$sha" != "$GITHUB_SHA" ]; then
+              echo "newest build is for ${sha:0:7}, not ${GITHUB_SHA:0:7} - waiting"
+            elif [ "$status" = "completed" ]; then
+              echo "build for ${GITHUB_SHA:0:7}: $conclusion"
+              if [ "$conclusion" != "success" ]; then
+                echo "SKIP=1" >> "$GITHUB_ENV"
+                echo "::notice::the build did not succeed - leaving the previous release alone"
+              fi
+              exit 0
+            else
+              echo "build is $status"
+            fi
+            sleep 15
+          done
+          echo "SKIP=1" >> "$GITHUB_ENV"
+          echo "::warning::no completed build for ${GITHUB_SHA:0:7} after 15 minutes"
 
       - name: The release we are decorating
+        if: env.SKIP != '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
