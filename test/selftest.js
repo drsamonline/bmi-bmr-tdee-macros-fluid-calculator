@@ -11,7 +11,17 @@ const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
+const built = path.join(__dirname, "..", "index.html");
+if (!fs.existsSync(built)) {
+  // Say what is missing and how to make it, instead of dying on an ENOENT stack
+  // that reads like a broken test rather than a missing build step.
+  console.error(
+    "FAIL no built page at " + built + "\n" +
+    "The self-test drives the BUILT page, not src/. Run `npm run build` first."
+  );
+  process.exit(1);
+}
+const html = fs.readFileSync(built, "utf8");
 const dom = new JSDOM(html, { runScripts: "dangerously", pretendToBeVisual: true });
 
 setTimeout(() => {

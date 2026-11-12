@@ -26,4 +26,9 @@ jobs:
         with:
           node-version: "20"
       - run: npm install
+      # The self-test drives the BUILT page (index.html at the repo root), which
+      # `npm run build` writes from src/. Without this step the suite died on
+      # ENOENT: no such file or directory, open '.../index.html' - red on every
+      # push since the build artefact stopped being committed, testing nothing.
+      - run: npm run build
       - run: npm test
