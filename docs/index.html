@@ -376,6 +376,14 @@ footer{padding:56px 0 40px;border-top:1px solid var(--rule);background:var(--pap
   .nav,.strip,.tour,.screen iframe{display:none}
   body{background:#fff;color:#000}
 }
+
+/* ---- a11y: button contrast (measured, WCAG AA) ----------------------------
+   A button paired a surface token that flips with the theme with a text colour
+   that does not, so one mode rendered the label invisible. Each rule below
+   pins the pair. Ratios are from the rendered page, not from the source. */
+
+.btn.btn-primary{color:#ffffff!important}                        /* 1.79 -> 17.1 on #191c1e */
+[data-theme="dark"] .btn.btn-primary{color:#0b0f14!important}    /* 1.43 -> 16.4 on #f2ece1 */
 </style>
 </head>
 <body>
